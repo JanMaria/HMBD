@@ -25,7 +25,5 @@
 
   {{ form_label(form.add, 'Dodaj') }}
   {{ form_widget(form.add, {'attr': {'class': "btn btn-primary"}}) }}
-
-  {{ form_row(form._token) }}
-
+{{ form_end(form) }}
 {% endblock %}

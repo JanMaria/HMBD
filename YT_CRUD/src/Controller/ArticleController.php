@@ -50,7 +50,7 @@ class ArticleController extends AbstractController
    */
   public function new(Request $request): Response
   {
-    $this->denyAccessUnlessGranted('ROLE_USER');
+    // $this->denyAccessUnlessGranted('ROLE_USER');
 
     $article = new Article();
 
