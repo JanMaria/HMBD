@@ -50,6 +50,8 @@ class ArticleController extends AbstractController
    */
   public function new(Request $request): Response
   {
+    $this->denyAccessUnlessGranted('ROLE_USER');
+
     $article = new Article();
 
     $form = $this->createForm(NewArticleForm::class, $article);
@@ -75,6 +77,8 @@ class ArticleController extends AbstractController
    */
   public function edit(Request $request, Article $article, FormHandler $handler): Response
   {
+    $this->denyAccessUnlessGranted('ROLE_USER');
+
     $form = $this->createForm(EditArticleForm::class, $article, [
       'isPublishedOptions' => [
         'tak' => true,
@@ -132,7 +136,7 @@ class ArticleController extends AbstractController
   */
   public function delete(Request $request, Article $article): Response
   {
-    // $article = $this->getDoctrine()->getRepository(Article::class)->find($id);
+    $this->denyAccessUnlessGranted('ROLE_USER');
 
     $entityManager = $this->getDoctrine()->getManager();
     $entityManager->remove($article);
