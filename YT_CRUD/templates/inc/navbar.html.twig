@@ -7,6 +7,12 @@
 
   <div class="collapse navbar-collapse" id="mobile-nav">
     <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a href={{ path('user_registration') }} class="nav-link">Rejestracja</a>
+      </li>
+      <li class="nav-item">
+        <a href={{ path('app_login') }} class="nav-link">Logowanie</a>
+      </li>
       <li class="search-form">
         <form action={{ path('article_search') }} class="form-inline">
           <input type="text" name="query" placeholder="Szukaj..." class="form-control">

@@ -18,7 +18,7 @@ class User implements UserInterface
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=180, unique=true)
+     * @ORM\Column(unique=true)
      */
     private $email;
 
@@ -29,9 +29,11 @@ class User implements UserInterface
 
     /**
      * @var string The hashed password
-     * @ORM\Column(type="string")
+     * @ORM\Column()
      */
     private $password;
+
+    private $plainPassword;
 
     public function getId(): ?int
     {
@@ -77,6 +79,18 @@ class User implements UserInterface
         $this->roles = $roles;
 
         return $this;
+    }
+
+    public function getPlainPassword(): string
+    {
+      return (string) $this->plainPassword;
+    }
+
+    public function setPlainPassword($password): self
+    {
+      $this->plainPassword = $password;
+
+      return $this;
     }
 
     /**
