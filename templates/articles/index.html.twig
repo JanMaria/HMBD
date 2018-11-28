@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}YT_CRUD Articles{% endblock %}
+
+{% block body %}
+  {% if articles %}
+    <table id="articles" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Tytuł</th>
+          <th>Autor</th>
+          <th>Utworzono</th>
+          <th>Opublikowano</th>
+          <th>Fragment</th>
+          <th>Akcje</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for article in articles %}
+          <tr>
+            <td>{{ article.title }}</td>
+            <td>{{ article.author }}</td>
+            <td>{{ article.createdAt|date('d-m-Y') }}</td>
+            <td>{{ article.isPublished ? 'Tak' : 'Nie' }}</td>
+            <td>{{ article.body|truncate(100, true, '(...)')|wordwrap(30)|nl2br }}</td>
+            <td>
+              <a href={{ path('article_show', { 'articleID': article.id })}} class="btn btn-primary">Show</a>
+              <a href={{ path('edit_article', { 'id': article.id })}} class="btn btn-light">Edit</a>
+              <a href={{ path('delete_article', {'id': article.id })}}
+                class="btn btn-danger delete-article" onclick="return confirm('Are you sure?')">Delete</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+  {% else %}
+    <p>No articles to display</p>
+  {% endif %}
+{% endblock %}
