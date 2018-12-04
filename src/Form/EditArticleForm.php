@@ -24,7 +24,6 @@ class EditArticleForm extends AbstractType
   public function buildForm(FormBuilderInterface $builder, array $options)
   {
     $builder
-      ->add('id', IntegerType::class, ['disabled' => true])
       ->add('title', TextType::class, [
         'constraints' => [
           new NotBlank(),

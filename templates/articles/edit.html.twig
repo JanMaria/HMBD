@@ -4,9 +4,6 @@
 
 {% block body %}
   {{ form_start(form) }}
-    {{ form_label(form.id, 'ID:') }}
-    {{ form_widget(form.id, {'attr': {'class': 'form-control h-200'}}) }}
-
     {{ form_label(form.title, 'Tytuł:') }}
     {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
     {{ form_errors(form.title) }}
@@ -29,7 +26,10 @@
     }}) }}
     {{ form_errors(form.body) }}
 
-    {{ form_label(form.save, 'Zapisz zmiany') }}
-    {{ form_widget(form.save, {'attr': {'class': 'btn btn-primary'}}) }}
+    {{ form_widget(form.save, {
+      'attr': {'class': 'btn btn-primary'},
+      'label': 'Zapisz zmiany'
+      }) 
+    }}
   {{ form_end(form) }}
 {% endblock %}

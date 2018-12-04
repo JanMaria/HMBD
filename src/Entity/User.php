@@ -81,6 +81,11 @@ class User implements UserInterface
         return $this;
     }
 
+    // public function hasRole(string $role): bool
+    // {
+    //   return (\in_array($role, $roles));
+    // }
+
     public function getPlainPassword(): string
     {
       return (string) $this->plainPassword;
