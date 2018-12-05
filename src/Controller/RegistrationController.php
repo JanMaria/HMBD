@@ -10,13 +10,14 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use App\Form\RegistrationForm;
 use App\Entity\User;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class RegistrationController extends AbstractController
 {
   /**
    * @Route("/register", name="user_registration")
    */
-  public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+  public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder, ValidatorInterface $validator)
   {
     // $user = new User();
     $form = $this->createForm(RegistrationForm::class);

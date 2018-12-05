@@ -28,7 +28,10 @@ class NewArticleForm extends AbstractType
       ->add('isPublished', CheckboxType::class, [
         'required' => false
       ])
-      ->add('body', TextareaType::class)
+      ->add('body', TextareaType::class, [
+        'required' => false,
+        'empty_data' => '[...nie dodano jeszcze treści artykułu...]'
+      ])
       ->add('add', SubmitType::class);
   }
 /**
