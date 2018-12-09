@@ -18,9 +18,9 @@ class FormHandler
 
   public function handleForm(Form $form): void
   {
-    $form->getData()->setAuthor('Jan Maria');
+    // $form->getData()->setAuthor('Jan Maria');
 
     $this->manager->flush();
   }
-  
+
 }

@@ -37,7 +37,6 @@ class ArticleController extends AbstractController
    */
    public function search(Request $request): Response
    {
-     // $query = $_GET["query"];
      $query = $request->query->get('query');
      $articles = $this->getDoctrine()->getRepository(Article::class)->findByPartialTitle($query);
 
@@ -50,8 +49,7 @@ class ArticleController extends AbstractController
    */
   public function new(Request $request): Response
   {
-    // $this->denyAccessUnlessGranted('ROLE_USER');
-
+// tego chyba nie powinno być tutaj... zająć się tym (podobnie w edit() )
     $article = new Article();
 
     $form = $this->createForm(NewArticleForm::class, $article);
