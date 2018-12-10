@@ -25,7 +25,7 @@ class EditArticleForm extends AbstractType
   {
     $builder
       ->add('title', TextType::class)
-      ->add('author', TextType::class)
+      ->add('authorEmail', TextType::class)
       ->add('createdAt', DateType::class, [
         'widget' => 'single_text',
         'format' => 'dd-MM-yyyy',

@@ -30,7 +30,7 @@ class IsExistingUserValidator extends ConstraintValidator
             return;
         }
 
-        if ($this->userRepository->findBy(['email' => $value]) === null) {
+        if ($this->userRepository->findOneBy(['email' => $value]) === null) {
             $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ string }}', $value)
                 ->addViolation();

@@ -47,7 +47,7 @@ class ArticleController extends AbstractController
    * @Route("/article/new", name="new_article")
    * @Method({"GET", "POST"})
    */
-  public function new(Request $request): Response
+  public function new(Request $request, FormHandler $handler): Response
   {
 // tego chyba nie powinno być tutaj... zająć się tym (podobnie w edit() )
     $article = new Article();
@@ -57,6 +57,7 @@ class ArticleController extends AbstractController
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
+      $handler->handleForm($form);
       $article = $form->getData();
 
       $entityManager = $this->getDoctrine()->getManager();
@@ -75,8 +76,6 @@ class ArticleController extends AbstractController
    */
   public function edit(Request $request, Article $article, FormHandler $handler): Response
   {
-    $this->denyAccessUnlessGranted('ROLE_USER');
-
     $form = $this->createForm(EditArticleForm::class, $article, [
       'isPublishedOptions' => [
         'tak' => true,

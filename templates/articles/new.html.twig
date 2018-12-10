@@ -7,10 +7,10 @@
   {{ form_label(form.title, 'Tytuł:') }}
   {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
   {{ form_errors(form.title) }}
-
-  {{ form_label(form.author, 'Autor:') }}
-  {{ form_widget(form.author, {'attr': {'class': 'form-control'}}) }}
-  {{ form_errors(form.author) }}
+<!-- tutaj email, żeby nie rozbudowywać (na razie??) usera o dodatkowe pole "name" -->
+  {{ form_label(form.authorEmail, 'Email autora:') }}
+  {{ form_widget(form.authorEmail, {'attr': {'class': 'form-control'}}) }}
+  {{ form_errors(form.authorEmail) }}
 
   {{ form_label(form.createdAt, 'Data utworzenia (rrrr-mm-dd):') }}
   {{ form_widget(form.createdAt, {'attr': {'class': 'form-control'}})}}

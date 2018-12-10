@@ -33,9 +33,12 @@ class Article
   * @Assert\NotBlank(
   *     message = "To pole nie może być puste"
   * )
+  * @Assert\Email(
+  *     message = "{{ value }} nie jest poprawnym adresem e-mail"
+  * )
   * @MyAssert\IsExistingUser
   */
-  private $author;
+  private $authorEmail;
 
   /**
   * @ORM\Column(type="datetime")
@@ -54,7 +57,7 @@ class Article
 
   /**
    * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="articles")
-   * @ORM\JoinColumn(nullable=false)
+   * @ORM\JoinColumn(nullable=true)
    */
   private $user;
 
@@ -75,14 +78,14 @@ class Article
     return $this;
   }
 
-  public function getAuthor(): ?string
+  public function getAuthorEmail(): ?string
   {
-    return $this->author;
+    return $this->authorEmail;
   }
 
-  public function setAuthor(string $author): self
+  public function setAuthorEmail(string $authorEmail): self
   {
-    $this->author = $author;
+    $this->authorEmail = $authorEmail;
 
     return $this;
   }

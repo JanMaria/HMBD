@@ -8,9 +8,9 @@
     {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
     {{ form_errors(form.title) }}
 
-    {{ form_label(form.author, 'Autor:') }}
-    {{ form_widget(form.author, {'attr': {'class': 'form-control'}}) }}
-    {{ form_errors(form.author) }}
+    {{ form_label(form.authorEmail, 'Email autora:') }}
+    {{ form_widget(form.authorEmail, {'attr': {'class': 'form-control'}}) }}
+    {{ form_errors(form.authorEmail) }}
 
     {{ form_label(form.createdAt, 'Data utworzenia (dd-mm-rrrr):') }}
     {{ form_widget(form.createdAt, {'attr': {'class': 'form-control'}})}}
