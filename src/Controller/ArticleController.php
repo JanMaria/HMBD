@@ -64,6 +64,8 @@ class ArticleController extends AbstractController
       $entityManager->persist($article);
       $entityManager->flush();
 
+      $this->addFlash('success', 'Dodano artykuł');
+
       return $this->redirectToRoute('article_list');
     }
 
@@ -87,6 +89,8 @@ class ArticleController extends AbstractController
 
     if ($form->isSubmitted() && $form->isValid()) {
       $handler->handleForm($form);
+
+      $this->addFlash('success', 'Artykuł został zedytowany');
 
       return $this->redirectToRoute('article_list');
     }

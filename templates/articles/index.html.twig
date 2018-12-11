@@ -3,6 +3,13 @@
 {% block title %}Lista Artykułów{% endblock %}
 
 {% block body %}
+
+  {% for message in app.flashes('success') %}
+    <div class="alert alert-success">
+      {{ message }}
+    </div>
+  {% endfor %}
+
   {% if articles %}
     <table id="articles" class="table table-striped">
       <thead>
@@ -29,7 +36,7 @@
               {% if is_granted('ROLE_ADMIN') %}
                 <a href={{ path('edit_article', { 'id': article.id })}} class="btn btn-light">Edytuj</a>
                 <a href={{ path('delete_article', {'id': article.id }) }}
-                class="btn btn-danger delete-article" onclick="return confirm('Are you sure?')">Usuń</a>
+                class="btn btn-danger delete-article" onclick="return confirm('Czy jesteś pewny?')">Usuń</a>
               {% endif %}
             </td>
           </tr>
