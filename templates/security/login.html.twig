@@ -3,6 +3,13 @@
 {% block title %}Logowanie!{% endblock %}
 
 {% block body %}
+
+{% for message in app.flashes('loginFailure') %}
+  <div class="alert alert-danger">
+    {{ message }}
+  </div>
+{% endfor %}
+
 <form method="post">
     {% if error %}
         <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
