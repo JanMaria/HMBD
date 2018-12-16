@@ -22,6 +22,7 @@ security:
               username_parameter: _email
             logout:
               path: app_logout
+              handlers: [App\EventListener\UserLogoutListener]
 
             # guard:
             #     authenticators:
