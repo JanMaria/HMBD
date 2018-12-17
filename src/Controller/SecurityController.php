@@ -7,11 +7,15 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use App\Entity\User;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class SecurityController extends AbstractController
 {
+    // TODO: nie wiem, czy lepiej wyrzucić HttpException 403 jak tu, czy przekierować,
+    //  jak przy próbie rejestracji zalogowanego użytkownika
     /**
      * @Route("/login", name="app_login")
+     * @Security("not is_granted('ROLE_USER')", statusCode=403)
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
@@ -19,20 +23,6 @@ class SecurityController extends AbstractController
         $error = $authenticationUtils->getLastAuthenticationError();
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
-
-        // if ($error !== null &&
-        //   $this->getDoctrine()->getManager()->getRepository(User::class)->
-        //   findOneBy(['email' => $lastUsername]) !== null) {
-        //     $message = (new Swift_Message())
-        //       ->setSubject('[ytcrud]: Nieudana próba logowania')
-        //       ->setFrom(['ytcrud@gmail.com' => 'ytcrud'])
-        //       ->setTo($lastUsername)
-        //       ->setBody('Ktoś próbował się zalogować na twoje konto przy użyciu niepoprawnego hasła.');
-        //
-        //       $mailer->send($message);
-        //
-        //       $this->addFlash('loginFailure', 'Niepoprawne hasło. Wysłano powiadomienie.');
-        // }
 
         return $this->render('security/login.html.twig', [
           'last_username' => $lastUsername,
