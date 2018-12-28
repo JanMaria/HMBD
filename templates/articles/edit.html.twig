@@ -25,11 +25,15 @@
       'rows': 5,
     }}) }}
     {{ form_errors(form.body) }}
-
+  <div>
     {{ form_widget(form.save, {
       'attr': {'class': 'btn btn-primary'},
       'label': 'Zapisz zmiany'
       })
     }}
   {{ form_end(form) }}
+
+
+    <a href={{ path('article_list') }} class="btn btn-link" style="float: right;">Anuluj</a>
+  </div>
 {% endblock %}

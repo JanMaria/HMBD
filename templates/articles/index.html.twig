@@ -4,6 +4,29 @@
 
 {% block body %}
 
+<div class="modal fade" id="articleDeleteModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog">
+
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Usuń artykuł</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form action={{ path('delete_article') }} method="post">
+          <p>Czy na pewno chcesz usunąć ten artykuł?</p>
+          <input type="hidden" name="article_id" id="artcl_id" value="">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
+          <button type="submit" class="btn btn-danger" onclick=>Usuń</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+</div>
+
   {% for message in app.flashes('success') %}
     <div class="alert alert-success">
       {{ message }}
@@ -31,12 +54,14 @@
             <td>{{ article.isPublished ? 'Tak' : 'Nie' }}</td>
             <td>{{ article.body|truncate(100, true, '(...)')|wordwrap(30)|nl2br }}</td>
             <td>
-              <a href={{ path('article_show', { 'articleID': article.id })}} class="btn btn-primary">Pokaż</a>
+              <a href={{ path('article_show', { 'id': article.id })}} class="btn btn-primary">Pokaż</a>
 
               {% if is_granted('ROLE_ADMIN') %}
-                <a href={{ path('edit_article', { 'id': article.id })}} class="btn btn-light">Edytuj</a>
-                <a href={{ path('delete_article', {'id': article.id }) }}
-                class="btn btn-danger delete-article" onclick="return confirm('Czy jesteś pewny?')">Usuń</a>
+                <a href={{ path('edit_article', { 'id': article.id }) }} class="btn btn-light">Edytuj</a>
+                <button class="btn btn-danger delete-article" data-toggle="modal"
+                  data-target="#articleDeleteModal" data-articleid={{ article.id }}>Usuń
+                </button>
+
               {% endif %}
             </td>
           </tr>
@@ -46,4 +71,16 @@
   {% else %}
     <p>Brak artykułów</p>
   {% endif %}
+{% endblock %}
+
+{% block javascripts %}
+  <script>
+    $('#articleDeleteModal').on('show.bs.modal', function(event){
+      var button = $(event.relatedTarget)
+      var article_id = button.data('articleid')
+      var mdl = $(this)
+
+      mdl.find('.modal-body #artcl_id').val(article_id);
+    })
+  </script>
 {% endblock %}

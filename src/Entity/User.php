@@ -5,8 +5,9 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -111,14 +112,14 @@ class User implements UserInterface
 
     public function getPlainPassword(): string
     {
-      return (string) $this->plainPassword;
+        return (string) $this->plainPassword;
     }
 
     public function setPlainPassword($password): self
     {
-      $this->plainPassword = $password;
+        $this->plainPassword = $password;
 
-      return $this;
+        return $this;
     }
 
     /**
@@ -182,5 +183,26 @@ class User implements UserInterface
         }
 
         return $this;
+    }
+
+    // TODO: find by int
+    public function hasArticle($id)
+    {
+        $exprBldr = Criteria::expr();
+        $expression = $exprBldr->eq('id', $id);
+        if ($this->articles->matching(new Criteria($expression))->isEmpty()) {
+            return false;
+        }
+
+        return true;
+        //
+        // return $this->articles->get(0)->getId();
+        //
+        // if ($this->articles->containsKey($id)) {
+        //     return 'true';
+        // }
+        // return 'false';
+
+        // return $this->articles->isEmpty();
     }
 }

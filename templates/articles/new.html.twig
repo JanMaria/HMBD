@@ -3,30 +3,33 @@
 {% block title %}New Article{% endblock %}
 
 {% block body %}
-{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-  {{ form_label(form.title, 'Tytuł:') }}
-  {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
-  {{ form_errors(form.title) }}
-<!-- tutaj email, żeby nie rozbudowywać (na razie??) usera o dodatkowe pole "name" -->
-  {{ form_label(form.authorEmail, 'Email autora:') }}
-  {{ form_widget(form.authorEmail, {'attr': {'class': 'form-control'}}) }}
-  {{ form_errors(form.authorEmail) }}
+  {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    {{ form_label(form.title, 'Tytuł:') }}
+    {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
+    {{ form_errors(form.title) }}
+  <!-- tutaj email, żeby nie rozbudowywać (na razie??) usera o dodatkowe pole "name" -->
+    {{ form_label(form.authorEmail, 'Email autora:') }}
+    {{ form_widget(form.authorEmail, {'attr': {'class': 'form-control'}}) }}
+    {{ form_errors(form.authorEmail) }}
 
-  {{ form_label(form.createdAt, 'Data utworzenia (rrrr-mm-dd):') }}
-  {{ form_widget(form.createdAt, {'attr': {'class': 'form-control'}})}}
-  {{ form_errors(form.createdAt) }}
+    {{ form_label(form.createdAt, 'Data utworzenia (rrrr-mm-dd):') }}
+    {{ form_widget(form.createdAt, {'attr': {'class': 'form-control'}})}}
+    {{ form_errors(form.createdAt) }}
 
-  {{ form_label(form.isPublished, 'Opublikowano:') }}
-  {{ form_widget(form.isPublished, {'attr': {'class': 'form-check'}}) }}
+    {{ form_label(form.isPublished, 'Opublikowano:') }}
+    {{ form_widget(form.isPublished, {'attr': {'class': 'form-check'}}) }}
 
-  {{ form_label(form.body, 'Treść:') }}
-  {{ form_widget(form.body, {'attr': {'class': "form-control h-200"}}) }}
-  {{ form_errors(form.body) }}
+    {{ form_label(form.body, 'Treść:') }}
+    {{ form_widget(form.body, {'attr': {'class': "form-control h-200"}}) }}
+    {{ form_errors(form.body) }}
+  <div>
+    {{ form_widget(form.add, {
+      'attr': {'class': "btn btn-primary"},
+      'label': 'Dodaj'
+      })
+    }}
+  {{ form_end(form) }}
 
-  {{ form_widget(form.add, {
-    'attr': {'class': "btn btn-primary"},
-    'label': 'Dodaj'
-    })
-  }}
-{{ form_end(form) }}
+  <a href={{ path('article_list') }} class="btn btn-link" style="float: right;">Anuluj</a>
+</div>
 {% endblock %}

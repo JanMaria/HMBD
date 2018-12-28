@@ -49,7 +49,7 @@ class UserEventSubscriber implements EventSubscriberInterface
 
         $this->logger->warning('Authentication Failure', ['username' => $lastEmail]);
 
-        if ($this->entityManager->getRepository(User::class)->findOneBy(['email' => $lastEmail]) != null) {
+        if ($this->entityManager->getRepository(User::class)->findOneBy(['email' => $lastEmail]) !== null) {
             // TODO: Wysyłanie wiadomości jest bardzoz czasochłonne. Czy da się coś z tym zrobić?
             $message = (new \Swift_Message())
               ->setSubject('[ytcrud]: Nieudana próba logowania')
