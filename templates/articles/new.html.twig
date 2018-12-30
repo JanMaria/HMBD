@@ -8,16 +8,22 @@
     {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
     {{ form_errors(form.title) }}
   <!-- tutaj email, żeby nie rozbudowywać (na razie??) usera o dodatkowe pole "name" -->
-    {{ form_label(form.authorEmail, 'Email autora:') }}
-    {{ form_widget(form.authorEmail, {'attr': {'class': 'form-control'}}) }}
-    {{ form_errors(form.authorEmail) }}
+    {{ form_label(form.user, 'Autor:') }}
+    {{ form_widget(form.user, {'attr': {'class': 'form-control'}}) }}
+    {{ form_errors(form.user) }}
 
-    {{ form_label(form.createdAt, 'Data utworzenia (rrrr-mm-dd):') }}
-    {{ form_widget(form.createdAt, {'attr': {'class': 'form-control'}})}}
+    <div class="row" style="margin-top: 10px; margin-bottom: 10px">
+      <div class="col">{{ form_label(form.createdAt, 'Data utworzenia (rrrr-mm-dd):') }}</div>
+      <div class="col">{{ form_widget(form.createdAt.year, {'attr': {'class': 'form-control'}}) }}</div>
+      <div class="col">{{ form_widget(form.createdAt.month, {'attr': {'class': 'form-control'}}) }}</div>
+      <div class="col">{{ form_widget(form.createdAt.day, {'attr': {'class': 'form-control'}}) }}</div>
+    </div>
     {{ form_errors(form.createdAt) }}
 
-    {{ form_label(form.isPublished, 'Opublikowano:') }}
-    {{ form_widget(form.isPublished, {'attr': {'class': 'form-check'}}) }}
+    <table><tr>
+      <td>{{ form_label(form.isPublished, 'Opublikowano:') }}</td>
+      <td style="padding-left: 10px">{{ form_widget(form.isPublished, {'attr': {'class': 'form-check'}}) }}</td>
+    </tr></table>
 
     {{ form_label(form.body, 'Treść:') }}
     {{ form_widget(form.body, {'attr': {'class': "form-control h-200"}}) }}

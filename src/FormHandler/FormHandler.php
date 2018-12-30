@@ -15,19 +15,18 @@ use App\Entity\User;
    */
 class FormHandler
 {
-  private $manager;
+    private $manager;
 
-  public function __construct(EntityManagerInterface $manager)
-  {
-    $this->manager = $manager;
-  }
+    public function __construct(EntityManagerInterface $manager)
+    {
+        $this->manager = $manager;
+    }
 
-  public function handleForm(Form $form): void
-  {
-    $user = $this->manager->getRepository(User::class)->findOneBy(['email' => $form->getData()->getAuthorEmail()]);
-    $form->getData()->setUser($user);
+    public function handleForm(Form $form): void
+    {
+        //$user = $this->manager->getRepository(User::class)->findOneBy(['email' => $form->getData()->getAuthorEmail()]);
+        //$form->getData()->setUser($user);
 
-    $this->manager->flush();
-  }
-
+        $this->manager->flush();
+    }
 }

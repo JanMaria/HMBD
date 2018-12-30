@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\Common\Collections\Criteria;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -185,13 +186,13 @@ class User implements UserInterface
         return $this;
     }
 
-    // TODO: find by int
     public function hasArticle($id)
     {
         $exprBldr = Criteria::expr();
         $expression = $exprBldr->eq('id', $id);
         if ($this->articles->matching(new Criteria($expression))->isEmpty()) {
             return false;
+            // throw new AccessDeniedException('odmowa dostępu');
         }
 
         return true;

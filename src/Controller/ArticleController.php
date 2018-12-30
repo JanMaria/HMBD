@@ -47,10 +47,7 @@ class ArticleController extends AbstractController
      */
     public function new(Request $request, FormHandler $handler): Response
     {
-    // TODO: tego chyba nie powinno być tutaj... zająć się tym (podobnie w edit() )
-        $article = new Article();
-
-        $form = $this->createForm(NewArticleForm::class, $article);
+        $form = $this->createForm(EditArticleForm::class);
 
         $form->handleRequest($request);
 
@@ -67,12 +64,12 @@ class ArticleController extends AbstractController
             return $this->redirectToRoute('article_list');
         }
 
-        return $this->render('articles/new.html.twig', ['form' => $form->createView()]);
+        return $this->render('articles/edit.html.twig', ['form' => $form->createView()]);
     }
 
     /**
      * @Route("/article/edit/{id}", name="edit_article")
-     * @Security("is_granted('ROLE_ADMIN') or user.hasArticle('id')", statusCode=403)
+     * @Security("is_granted('ROLE_ADMIN') or user.hasArticle(id)", statusCode=403)
      */
     public function edit(Request $request, Article $article, FormHandler $handler): Response
     {
@@ -114,12 +111,10 @@ class ArticleController extends AbstractController
     //     return $this->redirectToRoute('article_list');
     // }
 
-    // * @Route("/article/delete/{id}", name="delete_article")
     /**
     * @Route("/article/delete", name="delete_article")
-    * @Security("is_granted('ROLE_ADMIN') or user.hasArticle(request.get('id'))", statusCode=403)
+    * @Security("is_granted('ROLE_ADMIN') or user.hasArticle(request.get('article_id'))", statusCode=403)
     */
-    // public function delete(Request $request, Article $article): Response
     public function delete(Request $request): Response
     {
         $entityManager = $this->getDoctrine()->getManager();

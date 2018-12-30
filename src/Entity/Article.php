@@ -28,17 +28,17 @@ class Article
     */
     private $title;
 
-    /**
-    * @ORM\Column()
-    * @Assert\NotBlank(
-    *     message = "To pole nie może być puste"
-    * )
-    * @Assert\Email(
-    *     message = "{{ value }} nie jest poprawnym adresem e-mail"
-    * )
-    * @MyAssert\IsExistingUser
-    */
-    private $authorEmail;
+    // /**
+    // * @ORM\Column()
+    // * @Assert\NotBlank(
+    // *     message = "To pole nie może być puste"
+    // * )
+    // * @Assert\Email(
+    // *     message = "{{ value }} nie jest poprawnym adresem e-mail"
+    // * )
+    // * @MyAssert\IsExistingUser
+    // */
+    // private $authorEmail;
 
     /**
     * @ORM\Column(type="datetime")

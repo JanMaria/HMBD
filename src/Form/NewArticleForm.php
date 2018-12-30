@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Form;
 
 use App\Entity\Article;
+use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -16,6 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use App\Repository\UserRepository;
 
 class NewArticleForm extends AbstractType
@@ -31,7 +33,10 @@ class NewArticleForm extends AbstractType
   {
     $builder
       ->add('title', TextType::class)
-      ->add('authorEmail', TextType::class)
+      ->add('user', EntityType::class, [
+          'class' => User::class,
+          'choice_label' => 'email',
+      ])
       ->add('createdAt', DateType::class, [
         'widget' => 'text',
         'format' => 'yyyy-MM-dd'
