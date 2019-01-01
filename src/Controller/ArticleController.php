@@ -7,7 +7,7 @@ namespace App\Controller;
 use App\FormHandler\FormHandler;
 use App\Entity\Article;
 use App\Form\NewArticleForm;
-use App\Form\EditArticleForm;
+use App\Form\ArticleType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,6 +17,8 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\Exception\NotSupported;
 
 class ArticleController extends AbstractController
 {
@@ -25,7 +27,15 @@ class ArticleController extends AbstractController
      */
     public function index(): Response
     {
-        $articles = $this->getDoctrine()->getRepository(Article::class)->findAll();
+        // TODO: try-catch chyba powinien być wprowadzony jako AOP? Tylko nie wiem jak się
+        // to robi jeszcze. I czy się da.
+        // Albo zrobić EventListener który słucha KernelEvents::EXCEPTION, sprawdza czy
+        // (instanceof ORMException) ? wykonuje zawartość bloku catch : rzuca przechwywcony wyjątek dalej
+        try {
+            $articles = $this->getDoctrine()->getRepository(Article::class)->findAll();
+        } catch (ORMException $exception) {
+            $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
+        }
 
         return $this->render('articles/index.html.twig', ['articles' => $articles]);
     }
@@ -36,7 +46,14 @@ class ArticleController extends AbstractController
     public function search(Request $request): Response
     {
         $query = $request->query->get('query');
-        $articles = $this->getDoctrine()->getRepository(Article::class)->findByPartialTitle($query);
+        $articles = null;
+        try {
+            throw new \Exception('sth');
+            $articles = $this->getDoctrine()->getRepository(Article::class)->findByPartialTitle($query);
+        // } catch (ORMException $exception) {
+        } catch (\Exception $exception) {
+            $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
+        }
 
         return $this->render('articles/index.html.twig', ['articles' => $articles]);
     }
@@ -47,23 +64,25 @@ class ArticleController extends AbstractController
      */
     public function new(Request $request, FormHandler $handler): Response
     {
-        $form = $this->createForm(EditArticleForm::class);
+        $form = $this->createForm(ArticleType::class);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $handler->handleForm($form);
-            $article = $form->getData();
-
-            $entityManager = $this->getDoctrine()->getManager();
-            $entityManager->persist($article);
-            $entityManager->flush();
+            try {
+                // throw new \Exception('');
+                $handler->handleForm($form);
+            // } catch (\Exception $exception) {
+            } catch (ORMException $exception) {
+                $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
+                goto end;
+            }
 
             $this->addFlash('success', 'Dodano artykuł');
 
             return $this->redirectToRoute('article_list');
         }
-
+        end:
         return $this->render('articles/edit.html.twig', ['form' => $form->createView()]);
     }
 
@@ -71,25 +90,29 @@ class ArticleController extends AbstractController
      * @Route("/article/edit/{id}", name="edit_article")
      * @Security("is_granted('ROLE_ADMIN') or user.hasArticle(id)", statusCode=403)
      */
-    public function edit(Request $request, Article $article, FormHandler $handler): Response
+    public function edit(Request $request, Article $article): Response
     {
-        $form = $this->createForm(EditArticleForm::class, $article, [
+        $form = $this->createForm(ArticleType::class, $article, [
           'isPublishedOptions' => [
             'tak' => true,
-            'nie' => false
+            'nie' => false,
           ]
         ]);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $handler->handleForm($form);
-
+            try {
+                $this->getDoctrine()->getManager()->flush();
+            } catch (ORMException $exception) {
+                $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
+                goto end;
+            }
             $this->addFlash('success', 'Artykuł został zedytowany');
 
             return $this->redirectToRoute('article_list');
         }
-
+        end:
         return $this->render('articles/edit.html.twig', ['form' => $form->createView()]);
     }
 
@@ -101,16 +124,6 @@ class ArticleController extends AbstractController
         return $this->render('articles/show.html.twig', ['article' => $article]);
     }
 
-    // public function delete(Request $request, $articleId): Response
-    // {
-    //     $entityManager = $this->getDoctrine()->getManager();
-    //     $article = $entityManager->find(Article::class, $articleId);
-    //     $entityManager->remove($article);
-    //     $entityManager->flush();
-    //
-    //     return $this->redirectToRoute('article_list');
-    // }
-
     /**
     * @Route("/article/delete", name="delete_article")
     * @Security("is_granted('ROLE_ADMIN') or user.hasArticle(request.get('article_id'))", statusCode=403)
@@ -121,8 +134,12 @@ class ArticleController extends AbstractController
 
         $article = $entityManager->find(Article::class, $request->request->get('article_id'));
 
-        $entityManager->remove($article);
-        $entityManager->flush();
+        try {
+            $entityManager->remove($article);
+            $entityManager->flush();
+        } catch (ORMException $exception) {
+            $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
+        }
 
         return $this->redirectToRoute('article_list');
     }

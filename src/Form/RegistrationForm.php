@@ -15,23 +15,23 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RegistrationForm extends AbstractType
 {
-  public function buildForm(FormBuilderInterface $builder, array $options)
-  {
-    $builder
-      ->add('email', EmailType::class)
-      ->add('plainPassword', RepeatedType::class, [
-        'type' => PasswordType::class,
-        'first_options' => ['label' => 'Hasło'],
-        'second_options' => ['label' => 'Powtórz hasło'],
-        'invalid_message' => 'Niepoprawna wartość'
-      ])
-      ->add('submit', SubmitType::class);
-  }
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('email', EmailType::class)
+            ->add('plainPassword', RepeatedType::class, [
+                'type' => PasswordType::class,
+                'first_options' => ['label' => 'Hasło'],
+                'second_options' => ['label' => 'Powtórz hasło'],
+                'invalid_message' => 'Niepoprawna wartość'
+            ])
+            ->add('submit', SubmitType::class);
+    }
 
-  public function configureOptions(OptionsResolver $resolver)
-  {
-    $resolver->setDefaults([
-      'data_class' => User::class
-    ]);
-  }
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'data_class' => User::class
+        ]);
+    }
 }

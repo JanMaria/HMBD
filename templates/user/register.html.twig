@@ -3,6 +3,7 @@
 {% block title %}User Registration{% endblock %}
 
 {% block body %}
+  {{ parent() }}
   {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
     {{ form_label(form.email, 'Email:') }}
     {{ form_widget(form.email, {'attr': {'class': 'form-control'}})}}

@@ -26,13 +26,7 @@
 
   </div>
 </div>
-
-  {% for message in app.flashes('success') %}
-    <div class="alert alert-success">
-      {{ message }}
-    </div>
-  {% endfor %}
-
+    {{ parent() }}
   {% if articles %}
     <table id="articles" class="table table-striped">
       <thead>
@@ -48,7 +42,7 @@
       <tbody>
         {% for article in articles %}
           <tr>
-            <td>{{ article.title }}</td>
+            <td>{{ article.title|truncate(50, true, '(...)')|wordwrap(30)|nl2br }}</td>
             <td>{{ article.user.email }}</td>
             <td>{{ article.createdAt|date('d-m-Y') }}</td>
             <td>{{ article.isPublished ? 'Tak' : 'Nie' }}</td>

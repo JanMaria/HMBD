@@ -22,34 +22,34 @@ use App\Repository\UserRepository;
 
 class NewArticleForm extends AbstractType
 {
-  private $userRepository;
+    private $userRepository;
 
-  public function __construct(UserRepository $userRepository)
-  {
-    $this->userRepository = $userRepository;
-  }
+    public function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
 
-  public function buildForm(FormBuilderInterface $builder, array $options)
-  {
-    $builder
-      ->add('title', TextType::class)
-      ->add('user', EntityType::class, [
-          'class' => User::class,
-          'choice_label' => 'email',
-      ])
-      ->add('createdAt', DateType::class, [
-        'widget' => 'text',
-        'format' => 'yyyy-MM-dd'
-      ])
-      ->add('isPublished', CheckboxType::class, [
-        'required' => false
-      ])
-      ->add('body', TextareaType::class, [
-        'required' => false,
-        'empty_data' => '[...nie dodano jeszcze treści artykułu...]'
-      ])
-      ->add('add', SubmitType::class);
-  }
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder
+            ->add('title', TextType::class)
+            ->add('user', EntityType::class, [
+                'class' => User::class,
+                'choice_label' => 'email',
+            ])
+            ->add('createdAt', DateType::class, [
+                'widget' => 'text',
+                'format' => 'yyyy-MM-dd'
+            ])
+            ->add('isPublished', CheckboxType::class, [
+                'required' => false
+            ])
+            ->add('body', TextareaType::class, [
+                'required' => false,
+                'empty_data' => '[...nie dodano jeszcze treści artykułu...]'
+            ])
+            ->add('add', SubmitType::class);
+    }
 /**
  * Nie wiem co robi kod poniżej. Przepisałem go z manuala symfony ale jak go
  * wykomentuję to wszystko wydaje się działać tak samo. Btw - czy mogę zadawać

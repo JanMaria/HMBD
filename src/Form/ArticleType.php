@@ -25,7 +25,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Security\Core\Security;
 
-class EditArticleForm extends AbstractType
+class ArticleType extends AbstractType
 {
     private $security;
 
@@ -38,7 +38,6 @@ class EditArticleForm extends AbstractType
     {
         $builder
             ->add('title', TextType::class)
-            // ->add('authorEmail', TextType::class)
             ->add('user', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'email',
@@ -48,7 +47,6 @@ class EditArticleForm extends AbstractType
                 'format' => 'dd-MM-yyyy',
                 'invalid_message' => 'Wprowadź datę we wskazanym formacie',
             ])
-            // ->add('isPublished', ChoiceType::class, ['choices' => $options['isPublishedOptions']])
             ->add('body', TextareaType::class, [
                 'required' => false,
                 'empty_data' => '[...nie dodano jeszcze treści artykułu...]',
@@ -66,25 +64,8 @@ class EditArticleForm extends AbstractType
                     ]);
                 } else {
                     $form->add('isPublished', ChoiceType::class, ['choices' => $options['isPublishedOptions']]);
-                    // $builder
                 }
             });
-
-            // , ['choices' => $options['isPublishedOptions']]
-
-
-            // $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-            //     $user = $event->getData()->getUser();
-            //     $form = $event->getForm();
-            //
-            //     if (\in_array('ROLE_ADMIN', $this->security->getUser()->getRoles())) {
-            //         $form->add('user', EntityType::class, [
-            //           'class' => User::class,
-            //           'choice_label' => 'email',
-            //         ]);
-            //     }
-            //     $event->getData()->setBody(\implode($this->security->getUser()->getRoles()));
-            // });
     }
 
 
