@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Form;
+namespace App\Form\Type;
 
 use App\Entity\Article;
 use App\Entity\User;
@@ -21,18 +21,18 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\Date;
+// use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Security\Core\Security;
 
 class ArticleType extends AbstractType
 {
-    private $security;
-
-    public function __construct(Security $security)
-    {
-        $this->security = $security;
-    }
+    // private $security;
+    //
+    // public function __construct(Security $security)
+    // {
+    //     $this->security = $security;
+    // }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {

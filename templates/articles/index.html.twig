@@ -3,6 +3,7 @@
 {% block title %}Lista Artykułów{% endblock %}
 
 {% block body %}
+{{ parent() }}
 
 <div class="modal fade" id="articleDeleteModal" tabindex="-1" role="dialog">
   <div class="modal-dialog">
@@ -19,14 +20,36 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
-          <button type="submit" class="btn btn-danger" onclick=>Usuń</button>
+          <button type="submit" class="btn btn-danger">Usuń</button>
         </form>
       </div>
     </div>
 
   </div>
 </div>
-    {{ parent() }}
+
+<!-- TODO: to tylko na potrzeby debugowania -->
+<textarea id="myConsole" cols="50" rows="10"></textarea>
+
+{{ form_start(form, {'attr': {'id': 'filters', 'nowalidate': 'nowalidate'}})}}
+<div class="d-flex flex-row mb-3">
+    {{ form_label(form.from_date_filter, 'Od:') }}
+    {{ form_widget(form.from_date_filter, {'attr': {'class': 'p-2', 'onblur': 'submitForm()'}}) }}
+
+
+<!-- </div> -->
+<!-- <div class="d-flex flex-row mb-3"> -->
+    {{ form_label(form.to_date_filter, 'Do:') }}
+    {{ form_widget(form.to_date_filter, {'attr': {'class': 'p-2', 'onblur': 'submitForm()'}}) }}
+
+    {{ form_label(form.sort_filter, 'Sortowanie:', {'label_attr': {'class': 'ml-auto p-2'}}) }}
+    {{ form_widget(form.sort_filter, {'attr': {'onchange': 'submitForm()'}}) }}
+    {{ form_errors(form.sort_filter, {'attr': {'class': 'p-2'}}) }}
+</div>
+
+{{ form_errors(form.from_date_filter) }}
+{{ form_errors(form.to_date_filter) }}
+
   {% if articles %}
     <table id="articles" class="table table-striped">
       <thead>
@@ -45,17 +68,20 @@
             <td>{{ article.title|truncate(50, true, '(...)')|wordwrap(30)|nl2br }}</td>
             <td>{{ article.user.email }}</td>
             <td>{{ article.createdAt|date('d-m-Y') }}</td>
-            <td>{{ article.isPublished ? 'Tak' : 'Nie' }}</td>
+           <td>{{ article.isPublished ? 'Tak' : 'Nie' }}</td>
             <td>{{ article.body|truncate(100, true, '(...)')|wordwrap(30)|nl2br }}</td>
-            <td>
-              <a href={{ path('article_show', { 'id': article.id })}} class="btn btn-primary">Pokaż</a>
+            <td class="d-flex justify-content-center">
+              <a href={{ path('article_show', { 'id': article.id }) }} class="btn btn-outline-primary btn-sm">Pokaż</a>
+
+              {% if is_granted('ROLE_ADMIN') and not article.isPublished %}
+                  <a href={{ path('publish_article', { 'id': article.id }) }} class="btn btn-outline-success btn-sm">Opublikuj</a>
+              {% endif %}
 
               {% if is_granted('ROLE_ADMIN') or app.user is same as(article.user)  %}
-                <a href={{ path('edit_article', { 'id': article.id }) }} class="btn btn-light">Edytuj</a>
-                <button class="btn btn-danger delete-article" data-toggle="modal"
+                <a href={{ path('edit_article', { 'id': article.id }) }} class="btn btn-outline-dark btn-sm">Edytuj</a>
+                <button class="btn btn-outline-danger btn-sm" data-toggle="modal"
                   data-target="#articleDeleteModal" data-articleid={{ article.id }}>Usuń
                 </button>
-
               {% endif %}
             </td>
           </tr>
@@ -65,16 +91,32 @@
   {% else %}
     <p>Brak artykułów</p>
   {% endif %}
+
+    {{ form_label(form.articles_per_page_filter, 'Ilość artykułów na stronie:') }}
+    {{ form_widget(form.articles_per_page_filter, {'attr': {'class': 'p-2', 'onchange': 'submitForm()'}}) }}
+    {{ form_errors(form.articles_per_page_filter, {'attr': {'class': 'p-2'}}) }}
+    {{ form_end(form) }}
+
+
 {% endblock %}
 
 {% block javascripts %}
-  <script>
-    $('#articleDeleteModal').on('show.bs.modal', function(event){
-      var button = $(event.relatedTarget)
-      var article_id = button.data('articleid')
-      var mdl = $(this)
+    <script>
+        $('#articleDeleteModal').on('show.bs.modal', function(event){
+            var button = $(event.relatedTarget)
+            var article_id = button.data('articleid')
+            var mdl = $(this)
 
-      mdl.find('.modal-body #artcl_id').val(article_id);
-    })
-  </script>
+            mdl.find('.modal-body #artcl_id').val(article_id);
+        })
+    </script>
+
+    <script>
+    function submitForm() {
+        document.getElementById('filters').submit();
+        var cons = document.getElementById('myConsole');
+        cons.innerHTML = "zmieniono";
+    }
+    </script>
+
 {% endblock %}

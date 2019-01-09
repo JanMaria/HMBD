@@ -6,8 +6,9 @@ namespace App\Controller;
 
 use App\FormHandler\FormHandler;
 use App\Entity\Article;
-use App\Form\NewArticleForm;
-use App\Form\ArticleType;
+use App\Repository\ArticleRepository;
+use App\Form\Type\ArticleType;
+use App\Form\Type\FiltersType;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,7 +18,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Doctrine\ORM\Exception\ORMException;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Exception\NotSupported;
 
 class ArticleController extends AbstractController
@@ -25,19 +26,60 @@ class ArticleController extends AbstractController
     /**
      * @Route("/", name="article_list")
      */
-    public function index(): Response
+    public function index(Request $request, ArticleRepository $articleRepository): Response
     {
+        // $parameters = [
+        //     'from_date_filter',
+        //     'to_date_filter',
+        //     'sort_filter',
+        //     'articles_per_page_filter',
+        // ];
+        // foreach ($parameters as $parameter) {
+        //     $options[$parameter] = $request->query->get($parameter);
+        // }
+        $filters = [];
+        $articles = [];
+
+        $form = $this->createForm(FiltersType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $filters = $form->getData();
+            // throw new \Exception('some exception');
+        }
+
         // TODO: try-catch chyba powinien być wprowadzony jako AOP? Tylko nie wiem jak się
         // to robi jeszcze. I czy się da.
         // Albo zrobić EventListener który słucha KernelEvents::EXCEPTION, sprawdza czy
-        // (instanceof ORMException) ? wykonuje zawartość bloku catch : rzuca przechwywcony wyjątek dalej
+        // if (instanceof ORMException) {wykonuje zawartość bloku catch} else {rzuca przechwywcony wyjątek dalej}
         try {
-            $articles = $this->getDoctrine()->getRepository(Article::class)->findAll();
+            // throw new ORMException('exception');
+            // $articles = $this->gatherList();
+            $articles = $articleRepository->gatherList($filters);
         } catch (ORMException $exception) {
             $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
         }
 
-        return $this->render('articles/index.html.twig', ['articles' => $articles]);
+        return $this->render('articles/index.html.twig', [
+            'form' => $form->createView(),
+            'articles' => $articles,
+            // 'options' => $data,
+        ]);
+    }
+
+    private function gatherList()
+    {
+        $repo = $this->getDoctrine()->getRepository(Article::class);
+        $articleList = [];
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $articleList = $repo->findAll();
+        } else {
+            $articleList = $repo->findBy(['isPublished' => true]);
+            $articleList = ($this->isGranted('IS_AUTHENTICATED_FULLY')) ?
+            \array_merge($articleList, $repo->findBy(['user' => $this->getUser()])) : $articleList;
+        }
+
+        return $articleList;
     }
 
     /**
@@ -117,17 +159,17 @@ class ArticleController extends AbstractController
     }
 
     /**
-    * @Route("/article/{id<\d+>}", name="article_show")
-    */
+     * @Route("/article/{id<\d+>}", name="article_show")
+     */
     public function show(Article $article): Response
     {
         return $this->render('articles/show.html.twig', ['article' => $article]);
     }
 
     /**
-    * @Route("/article/delete", name="delete_article")
-    * @Security("is_granted('ROLE_ADMIN') or user.hasArticle(request.get('article_id'))", statusCode=403)
-    */
+     * @Route("/article/delete", name="delete_article")
+     * @Security("is_granted('ROLE_ADMIN') or user.hasArticle(request.get('article_id'))", statusCode=403)
+     */
     public function delete(Request $request): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
@@ -141,6 +183,28 @@ class ArticleController extends AbstractController
             $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
         }
 
+        return $this->redirectToRoute('article_list');
+    }
+
+    /**
+     * @Route("/article/publish/{id}", name="publish_article")
+     * @Security("is_granted('ROLE_ADMIN')")
+     */
+    public function publish(Article $article): Response
+    {
+        if (!$article->getIsPublished()) {
+            $article->setIsPublished(true);
+        }
+
+        try {
+            $this->getDoctrine()->getManager()->flush();
+        } catch (ORMException $exception) {
+            $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
+            goto end;
+        }
+        $this->addFlash('success', 'Artykuł został opublikowany');
+
+        end:
         return $this->redirectToRoute('article_list');
     }
 }
