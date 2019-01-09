@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use App\Validator\Constraints as MyAssert;
 
 /**
 * @ORM\Entity(repositoryClass="App\Repository\ArticleRepository")
@@ -20,13 +22,23 @@ class Article
 
   /**
   * @ORM\Column()
+  * @Assert\NotBlank(
+  *     message = "To pole nie może być puste"
+  * )
   */
   private $title;
 
   /**
   * @ORM\Column()
+  * @Assert\NotBlank(
+  *     message = "To pole nie może być puste"
+  * )
+  * @Assert\Email(
+  *     message = "{{ value }} nie jest poprawnym adresem e-mail"
+  * )
+  * @MyAssert\IsExistingUser
   */
-  private $author;
+  private $authorEmail;
 
   /**
   * @ORM\Column(type="datetime")
@@ -42,6 +54,12 @@ class Article
   * @ORM\Column(type="text")
   */
   private $body;
+
+  /**
+   * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="articles")
+   * @ORM\JoinColumn(nullable=true)
+   */
+  private $user;
 
   public function getId(): ?int
   {
@@ -60,14 +78,14 @@ class Article
     return $this;
   }
 
-  public function getAuthor(): ?string
+  public function getAuthorEmail(): ?string
   {
-    return $this->author;
+    return $this->authorEmail;
   }
 
-  public function setAuthor(string $author): self
+  public function setAuthorEmail(string $authorEmail): self
   {
-    $this->author = $author;
+    $this->authorEmail = $authorEmail;
 
     return $this;
   }
@@ -106,5 +124,17 @@ class Article
     $this->body = $body;
 
     return $this;
+  }
+
+  public function getUser(): ?User
+  {
+      return $this->user;
+  }
+
+  public function setUser(?User $user): self
+  {
+      $this->user = $user;
+
+      return $this;
   }
 }

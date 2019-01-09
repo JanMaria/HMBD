@@ -19,32 +19,24 @@ class UserRepository extends ServiceEntityRepository
         parent::__construct($registry, User::class);
     }
 
-    // /**
-    //  * @return User[] Returns an array of User objects
-    //  */
-    /*
-    public function findByExampleField($value)
+// metoda, którą chciałem użyć przy funkcjonalności autocomplete przy dodawaniu
+// autora do nowego artykułu... co jednak jest chyba znacznie trudniejsze
+// bo nie ma gotowego formularza obsługującego taką funkcjonalność
+// (czegoś łączącego TextType i ChoiceType)
+    public function findByPartialEmail($partialEmail)
     {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('u.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+      $users = $this->createQueryBuilder('user')
+        ->where('user.email LIKE :partialEmail')
+        ->setParameter('partialEmail', '%'.$partialEmail.'%')
+        ->getQuery()
+        ->getResult();
 
-    /*
-    public function findOneBySomeField($value): ?User
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+      $assocUsers = array();
+      foreach ($users as $user) {
+        $assocUsers[$user->getEmail()] = $user;
+      }
+
+      return $assocUsers;
     }
-    */
+
 }

@@ -6,7 +6,13 @@ namespace App\FormHandler;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\Form;
+use App\Entity\User;
 
+  /**
+   * [FormHandler description]
+   * Tu trzeba wprowadzić modyfikacje, żeby dostosować klasę osobno na potrzeby metody
+   * new i metody edit w kontrolerze
+   */
 class FormHandler
 {
   private $manager;
@@ -18,19 +24,10 @@ class FormHandler
 
   public function handleForm(Form $form): void
   {
-    $id = $form->get('id')->getData();
+    $user = $this->manager->getRepository(User::class)->findOneBy(['email' => $form->getData()->getAuthorEmail()]);
+    $form->getData()->setUser($user);
 
     $this->manager->flush();
-
-    $this->manager->createQueryBuilder()
-      ->update('App\Entity\Article', 'article')
-      ->set('article.author', ':myName')
-      ->where('article.id = :id')
-      ->setParameters([
-        'id' => $id,
-        'myName' => 'Jan Maria'
-        ])
-      ->getQuery()
-      ->execute();
   }
+
 }

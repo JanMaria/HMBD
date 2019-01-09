@@ -1,8 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}YT_CRUD Articles{% endblock %}
+{% block title %}Lista Artykułów{% endblock %}
 
 {% block body %}
+
+  {% for message in app.flashes('success') %}
+    <div class="alert alert-success">
+      {{ message }}
+    </div>
+  {% endfor %}
+
   {% if articles %}
     <table id="articles" class="table table-striped">
       <thead>
@@ -19,21 +26,24 @@
         {% for article in articles %}
           <tr>
             <td>{{ article.title }}</td>
-            <td>{{ article.author }}</td>
+            <td>{{ article.authorEmail }}</td>
             <td>{{ article.createdAt|date('d-m-Y') }}</td>
             <td>{{ article.isPublished ? 'Tak' : 'Nie' }}</td>
             <td>{{ article.body|truncate(100, true, '(...)')|wordwrap(30)|nl2br }}</td>
             <td>
-              <a href={{ path('article_show', { 'articleID': article.id })}} class="btn btn-primary">Show</a>
-              <a href={{ path('edit_article', { 'id': article.id })}} class="btn btn-light">Edit</a>
-              <a href={{ path('delete_article', {'id': article.id })}}
-                class="btn btn-danger delete-article" onclick="return confirm('Are you sure?')">Delete</a>
+              <a href={{ path('article_show', { 'articleID': article.id })}} class="btn btn-primary">Pokaż</a>
+
+              {% if is_granted('ROLE_ADMIN') %}
+                <a href={{ path('edit_article', { 'id': article.id })}} class="btn btn-light">Edytuj</a>
+                <a href={{ path('delete_article', {'id': article.id }) }}
+                class="btn btn-danger delete-article" onclick="return confirm('Czy jesteś pewny?')">Usuń</a>
+              {% endif %}
             </td>
           </tr>
           {% endfor %}
         </tbody>
     </table>
   {% else %}
-    <p>No articles to display</p>
+    <p>Brak artykułów</p>
   {% endif %}
 {% endblock %}

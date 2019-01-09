@@ -2,8 +2,11 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -19,6 +22,12 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(unique=true)
+     * @Assert\Email(
+     *    message = "'{{ value }}' nie jest poprawnym adresem e-mail"
+     * )
+     * @Assert\NotBlank(
+     *    message = "To pole nie może być puste"
+     * )
      */
     private $email;
 
@@ -33,7 +42,26 @@ class User implements UserInterface
      */
     private $password;
 
+    /**
+     * @Assert\NotBlank(
+     *    message = "To pole nie może być puste"
+     * )
+     * @Assert\Length(
+     *    max=4096,
+     *    maxMessage = "Hasło nie może zawierać więcej niż 4096 znaków"
+     * )
+     */
     private $plainPassword;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Article", mappedBy="user")
+     */
+    private $articles;
+
+    public function __construct()
+    {
+        $this->articles = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -123,5 +151,36 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection|Article[]
+     */
+    public function getArticles(): Collection
+    {
+        return $this->articles;
+    }
+
+    public function addArticle(Article $article): self
+    {
+        if (!$this->articles->contains($article)) {
+            $this->articles[] = $article;
+            $article->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeArticle(Article $article): self
+    {
+        if ($this->articles->contains($article)) {
+            $this->articles->removeElement($article);
+            // set the owning side to null (unless already changed)
+            if ($article->getUser() === $this) {
+                $article->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }

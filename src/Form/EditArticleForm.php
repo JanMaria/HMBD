@@ -24,28 +24,15 @@ class EditArticleForm extends AbstractType
   public function buildForm(FormBuilderInterface $builder, array $options)
   {
     $builder
-      ->add('id', IntegerType::class, ['disabled' => true])
-      ->add('title', TextType::class, [
-        'constraints' => [
-          new NotBlank(),
-        ]
-      ])
-      ->add('author', TextType::class)
+      ->add('title', TextType::class)
+      ->add('authorEmail', TextType::class)
       ->add('createdAt', DateType::class, [
         'widget' => 'single_text',
         'format' => 'dd-MM-yyyy',
         'invalid_message' => 'Wprowadź datę we wskazanym formacie',
       ])
       ->add('isPublished', ChoiceType::class, ['choices' => $options['isPublishedOptions']])
-      ->add('body', TextareaType::class, [
-        'constraints' => [
-          new Length([
-            'min' => 10,
-            'minMessage' => 'To pole powinno zawierać co najmniej 10 znaków',
-          ]),
-
-        ]
-      ])
+      ->add('body', TextareaType::class)
       ->add('save', SubmitType::class);
   }
 

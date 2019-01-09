@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use App\Form\RegistrationForm;
 use App\Entity\User;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 class RegistrationController extends AbstractController
 {
@@ -18,10 +19,11 @@ class RegistrationController extends AbstractController
    */
   public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder)
   {
-    $user = new User();
-    $form = $this->createForm(RegistrationForm::class, $user);
+    $form = $this->createForm(RegistrationForm::class);
 
     $form->handleRequest($request);
+
+    $user = $form->getData();
 
     if ($form->isSubmitted() && $form->isValid()) {
       $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
@@ -30,6 +32,10 @@ class RegistrationController extends AbstractController
       $entityManager = $this->getDoctrine()->getManager();
       $entityManager->persist($user);
       $entityManager->flush();
+
+      $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+      $this->container->get('security.token_storage')->setToken($token);
+      $this->container->get('session')->set('_security_main', serialize($token));
 
       return $this->redirectToRoute('article_list');
     }

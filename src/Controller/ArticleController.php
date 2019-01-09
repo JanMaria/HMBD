@@ -37,7 +37,6 @@ class ArticleController extends AbstractController
    */
    public function search(Request $request): Response
    {
-     // $query = $_GET["query"];
      $query = $request->query->get('query');
      $articles = $this->getDoctrine()->getRepository(Article::class)->findByPartialTitle($query);
 
@@ -48,10 +47,9 @@ class ArticleController extends AbstractController
    * @Route("/article/new", name="new_article")
    * @Method({"GET", "POST"})
    */
-  public function new(Request $request): Response
+  public function new(Request $request, FormHandler $handler): Response
   {
-    // $this->denyAccessUnlessGranted('ROLE_USER');
-
+// tego chyba nie powinno być tutaj... zająć się tym (podobnie w edit() )
     $article = new Article();
 
     $form = $this->createForm(NewArticleForm::class, $article);
@@ -59,11 +57,14 @@ class ArticleController extends AbstractController
     $form->handleRequest($request);
 
     if ($form->isSubmitted() && $form->isValid()) {
+      $handler->handleForm($form);
       $article = $form->getData();
 
       $entityManager = $this->getDoctrine()->getManager();
       $entityManager->persist($article);
       $entityManager->flush();
+
+      $this->addFlash('success', 'Dodano artykuł');
 
       return $this->redirectToRoute('article_list');
     }
@@ -77,8 +78,6 @@ class ArticleController extends AbstractController
    */
   public function edit(Request $request, Article $article, FormHandler $handler): Response
   {
-    $this->denyAccessUnlessGranted('ROLE_USER');
-
     $form = $this->createForm(EditArticleForm::class, $article, [
       'isPublishedOptions' => [
         'tak' => true,
@@ -90,6 +89,8 @@ class ArticleController extends AbstractController
 
     if ($form->isSubmitted() && $form->isValid()) {
       $handler->handleForm($form);
+
+      $this->addFlash('success', 'Artykuł został zedytowany');
 
       return $this->redirectToRoute('article_list');
     }
