@@ -6,7 +6,7 @@ use App\Entity\Article;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Security\Core\Security;
-use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * @method Article|null find($id, $lockMode = null, $lockVersion = null)
@@ -24,6 +24,30 @@ class ArticleRepository extends ServiceEntityRepository
         $this->security = $security;
     }
 
+    private function buildSecurityPart(QueryBuilder $qb): QueryBuilder
+    {
+        if (!$this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
+            $qb->andWhere('a.isPublished = 1');
+        } elseif (!$this->security->isGranted('ROLE_ADMIN')) {
+            $qb
+                ->andWhere('a.user = :thisUser OR a.isPublished = 1')
+                ->setParameter('thisUser', $this->security->getUser());
+        }
+
+        return $qb;
+    }
+
+    private function buildSearchPart(array $filters, QueryBuilder $qb): QueryBuilder
+    {
+        $qb
+            ->andWhere('a.title LIKE :partialTitle')
+            ->setParameter('partialTitle', '%'.$filters['partialTitle'].'%');
+
+        return $qb;
+    }
+
+
+
     public function findByPartialTitle($partialTitle)
     {
         return $this->createQueryBuilder('a')
@@ -37,12 +61,13 @@ class ArticleRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('a');
 
-        if (!$this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
-            $qb->andWhere('a.isPublished = 1');
-        } elseif (!$this->security->isGranted('ROLE_ADMIN')) {
-            $qb->andWhere('a.user = :thisUser OR a.isPublished = 1')
-            ->setParameter('thisUser', $this->security->getUser());
-        }
+        $this->buildSecurityPart($qb);
+        // if (!$this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
+        //     $qb->andWhere('a.isPublished = 1');
+        // } elseif (!$this->security->isGranted('ROLE_ADMIN')) {
+        //     $qb->andWhere('a.user = :thisUser OR a.isPublished = 1')
+        //     ->setParameter('thisUser', $this->security->getUser());
+        // }
 
 
         if (\array_key_exists('from_date_filter', $filters) && $filters['from_date_filter'] !== null) {
@@ -72,6 +97,9 @@ class ArticleRepository extends ServiceEntityRepository
             // a cała paginacja będzie napisany w html'u
             $qb->setMaxResults(10);
         }
+
+        $filters['subpages'] = \sizeof($qb->getQuery()->getResult());
+        dump('subpages', $filters['subpages']);
 
         // dump($qb->getQuery()->getSQL());
 

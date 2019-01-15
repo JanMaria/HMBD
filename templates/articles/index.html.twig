@@ -97,6 +97,23 @@
     {{ form_errors(form.articles_per_page_filter, {'attr': {'class': 'p-2'}}) }}
     {{ form_end(form) }}
 
+    <nav>
+        <form method="get" action={{ path('article_list') }} name="sth">
+            <input type="hidden" id="subpage" name="subpage" value="">
+        </form>
+        <ul class="pagination">
+            {% if metadata['subpage'] != 1 %}
+                <li class="page-item"><button class="page-link" data-subpage="1" onclick="setSubpage(this);">Pierwsza</a></li>
+            {% endif %}
+            {% for i in 1..metadata['subpages'] if i >= metadata['subpage'] - 3 and i <= metadata['subpage'] + 3 %}
+            <li class="page-item"><button class="page-link" data-subpage="{{ i }}" onclick="setSubpage(this);">{{ i }}</button></li>
+            {% endfor %}
+            {% if metadata['subpage'] != metadata['subpages'] %}
+                <li class="page-item"><button class="page-link" data-subpage="{{ metadata['subpages'] }}" onclick="setSubpage(this);">Ostatnia</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
 
 {% endblock %}
 
@@ -109,6 +126,18 @@
 
             mdl.find('.modal-body #artcl_id').val(article_id);
         })
+    </script>
+
+    <script>
+
+    </script>
+
+    <script>
+        function setSubpage(btn) {
+            var subpage = document.getElementById('subpage');
+            subpage.value = btn.dataset.subpage;
+            subpage.form.submit();
+        }
     </script>
 
     <script>

@@ -37,7 +37,9 @@ class ArticleController extends AbstractController
         // foreach ($parameters as $parameter) {
         //     $options[$parameter] = $request->query->get($parameter);
         // }
-        $filters = [];
+        dump($request->query->get('subpage'));
+        // $filters = [];
+        // $filters['subpages'] = 5;
         $articles = [];
 
         $form = $this->createForm(FiltersType::class);
@@ -54,8 +56,14 @@ class ArticleController extends AbstractController
         // if (instanceof ORMException) {wykonuje zawartość bloku catch} else {rzuca przechwywcony wyjątek dalej}
         try {
             // throw new ORMException('exception');
-            // $articles = $this->gatherList();
-            $articles = $articleRepository->gatherList($filters);
+
+            // $filters['articles_per_page'] = $request->request->get('articles_per_page');
+            // $filters['subpage'] = $request->request->get('subpage');
+            $filters['subpage'] = ($request->query->get('subpage') !== null) ? $request->query->get('subpage') : 1;
+            // $request->request->get('my-pagination');
+            // $filters['subpages'] = 17;
+            $articles = $articleRepository->gatherList($request);
+            // dump($filters['subpages']);
         } catch (ORMException $exception) {
             $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
         }
@@ -63,6 +71,7 @@ class ArticleController extends AbstractController
         return $this->render('articles/index.html.twig', [
             'form' => $form->createView(),
             'articles' => $articles,
+            'metadata' => $filters,
             // 'options' => $data,
         ]);
     }
