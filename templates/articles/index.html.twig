@@ -93,16 +93,16 @@
     <p>Brak artykułów</p>
   {% endif %}
 
-    {#TODO: tego jeszcze nie ogarniam w ogóle #}
-    {#<form action="{{ path('article_list', {'perPage': document.getElementById('perPage').value}) }}">
+    {#TODO: tu jeszcze  przechowywanie wybranej wartości #}
+    <form action="{{ path('article_list') }}">
         <select name="perPage" id="perPage" onchange="this.form.submit()">
-            <option value="10" selected>10</option>
+            <option value="10">10</option>
             <option value="15">15</option>
             <option value="20">20</option>
             <option value="25">25</option>
             <option value="30">30</option>
         </select>
-    </form>#}
+    </form>
     {#{{ form_label(form.articles_per_page_filter, 'Ilość artykułów na stronie:') }}
     {{ form_widget(form.articles_per_page_filter, {'attr': {'class': 'p-2', 'onchange': 'submitForm()'}}) }}
     {{ form_errors(form.articles_per_page_filter, {'attr': {'class': 'p-2'}}) }}#}

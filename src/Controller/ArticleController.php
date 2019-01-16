@@ -24,7 +24,7 @@ use Doctrine\ORM\Exception\NotSupported;
 class ArticleController extends AbstractController
 {
     /**
-     * @Route("/{currentPage}/{perPage}", name="article_list")
+     * @Route("/{currentPage}", name="article_list")
      */
     public function index(
         Request $request,
@@ -47,7 +47,7 @@ class ArticleController extends AbstractController
         // Albo zrobić EventListener który słucha KernelEvents::EXCEPTION, sprawdza czy
         // if (instanceof ORMException) {wykonuje zawartość bloku catch} else {rzuca przechwywcony wyjątek dalej}
         try {
-            $perPage = ($request->request->get('perPage')) ? $request->request->get('perPage') : $perPage;
+            $perPage = ($request->query->get('perPage')) ? $request->query->get('perPage') : $perPage;
             $articles = $articleRepository->getSubpage($filters, $currentPage, $perPage);
             $subpages = \ceil($articles->count() / $perPage);
         } catch (ORMException $exception) {
