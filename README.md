@@ -34,10 +34,10 @@
 # SZCZEGÓŁOWY OPIS STRON
 ## Ad. Lista artykułów
 - Lista w postaci tabeli. Przemyśl, które pola encji powinny zostać zawarte w tabeli, a które dopiero w formularzu.
-- Dodatkowa kolumna z przyciskami (Pokaż, Edytuj, Usuń, Opublikuj)
-- Przyciski "Opublikuj" i "Usuń" widoczne tylko dla Adminów
-- Przycisk "Opublikuj" powinien kierować do akcji bez widoku i ta akcja powinna przekierowywać z powrotem na listę z dodaną wiadomością flash czy publikacją się udała czy nie.
-- Przycisk "Edytuj" widoczny tylko dla użytkowników. Przy zwykłych użytkownikach tylko przy artykułach, które zostały utworzone przez nich, zaś dla adminów przy wszystkich.
+- `[x]` Dodatkowa kolumna z przyciskami (Pokaż, Edytuj, Usuń, Opublikuj)
+- `[x]` Przyciski "Opublikuj" i "Usuń" widoczne tylko dla Adminów
+- `[x]` **Edit** Przycisk "Opublikuj" powinien kierować do akcji bez widoku i ta akcja powinna przekierowywać z powrotem na listę z dodaną wiadomością flash czy publikacją się udała czy nie.
+- `[x]` Przycisk "Edytuj" widoczny tylko dla użytkowników. Przy zwykłych użytkownikach tylko przy artykułach, które zostały utworzone przez nich, zaś dla adminów przy wszystkich.
 - Nad tabelą z lewej strony dwa inputy do filtrowania listy, gdzie użytkownik będzie mógł wpisać daty OD - DO i na tej podstawie wyfiltrujesz wyświetlane artykuły
 - Nad tabelą z prawej strony selekt z sortowaniem: "Nazwa - rosnąco", "Nazwa - malejąco", "Data utworzenia - rosnąco", "Data utworzenia - malejąco"
 - Paginacja listy. Jednorazowo wyświetlane jest 10 artykułów.
@@ -59,14 +59,14 @@
 - Captcha w formularzy rejestracji.
 - Checkbox "Akceptuję regulamin strony". Musi być zaznaczony, aby przejść walidację.
 - Formularz rejestracji powinien być zbindowany do encji User, ale nie dodajemy captych'y i zgody do encji użytkownika.
-- Po poprawnym zarejestrowaniu od razu zalogowanie.
-- Do strony rejestracji nie powinien mieć dostępu już zalogowany użytkownik.
+- `[x]` Po poprawnym zarejestrowaniu od razu zalogowanie.
+- `[x]` Do strony rejestracji nie powinien mieć dostępu już zalogowany użytkownik.
 
 
 ## Ad. Strona logowania
-- Formularz logowania zrób w tradycyjnym HTML, bez wykorzystania Form Component.
+- `[x]` Formularz logowania zrób w tradycyjnym HTML, bez wykorzystania Form Component.
 - Funkcjonalność **Zapamiętaj mnie**. Ustaw czas na 1 tydzień.
-- Do strony logowania nie powinien mieć dostępu już zalogowany użytkownik.
+- `[x]` Do strony logowania nie powinien mieć dostępu już zalogowany użytkownik.
 
 ## Ad. Konto użytkownika
 - Użytkownik powinien mieć możliwość edycji swoich danych, jak również zmiany hasła.
