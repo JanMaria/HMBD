@@ -7,6 +7,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Security\Core\Security;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * @method Article|null find($id, $lockMode = null, $lockVersion = null)
@@ -37,38 +38,31 @@ class ArticleRepository extends ServiceEntityRepository
         return $qb;
     }
 
-    private function buildSearchPart(array $filters, QueryBuilder $qb): QueryBuilder
-    {
-        $qb
-            ->andWhere('a.title LIKE :partialTitle')
-            ->setParameter('partialTitle', '%'.$filters['partialTitle'].'%');
+    // private function buildSearchPart(array $filters, QueryBuilder $qb): QueryBuilder
+    // {
+    //     $qb
+    //         ->andWhere('a.title LIKE :partialTitle')
+    //         ->setParameter('partialTitle', '%'.$filters['partialTitle'].'%');
+    //
+    //     return $qb;
+    // }
 
-        return $qb;
-    }
 
 
+    // public function findByPartialTitle($partialTitle)
+    // {
+    //     return $this->createQueryBuilder('a')
+    //     ->where('a.title LIKE :partialTitle')
+    //     ->setParameter('partialTitle', '%'.$partialTitle.'%')
+    //     ->getQuery()
+    //     ->getResult();
+    // }
 
-    public function findByPartialTitle($partialTitle)
-    {
-        return $this->createQueryBuilder('a')
-        ->where('a.title LIKE :partialTitle')
-        ->setParameter('partialTitle', '%'.$partialTitle.'%')
-        ->getQuery()
-        ->getResult();
-    }
-
-    public function gatherList(array $filters)
+    private function buildQuery(array $filters)
     {
         $qb = $this->createQueryBuilder('a');
 
         $this->buildSecurityPart($qb);
-        // if (!$this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
-        //     $qb->andWhere('a.isPublished = 1');
-        // } elseif (!$this->security->isGranted('ROLE_ADMIN')) {
-        //     $qb->andWhere('a.user = :thisUser OR a.isPublished = 1')
-        //     ->setParameter('thisUser', $this->security->getUser());
-        // }
-
 
         if (\array_key_exists('from_date_filter', $filters) && $filters['from_date_filter'] !== null) {
             $qb
@@ -89,33 +83,27 @@ class ArticleRepository extends ServiceEntityRepository
             $qb->orderBy($sortMethod[0], $sortMethod[1]);
         }
 
-        if (\array_key_exists('articles_per_page_filter', $filters) && $filters['articles_per_page_filter'] !== null) {
-            $qb->setMaxResults($filters['articles_per_page_filter']);
-        } else {
-            // TODO: wiem, że to jest super brzydkie rozwiązanie. Na razie nie wiem jak to inaczej zaimplementować
-            // Myślę, że to nie będzie w formularzu, tylko będą dane w kontrolerze pobierane z requesta
-            // a cała paginacja będzie napisany w html'u
-            $qb->setMaxResults(10);
-        }
-
-        $filters['subpages'] = \sizeof($qb->getQuery()->getResult());
-        dump('subpages', $filters['subpages']);
-
         // dump($qb->getQuery()->getSQL());
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery();
     }
 
-    // private function prepareCriteria(array $filters)
-    // {
-    //     $criteria = [];
-    //     $criteria['user'] => ($serurity->isGranted('ROLE_ADMIN')) ? 'ANY' : $security->getUser();
-    //     if ($serurity->isGranted('ROLE_ADMIN')) {
-    //         $
-    //     } else {
-    //         $criteria['user'] => $security->getUser();
-    //     }
-    //
-    //     return $criteria;
-    // }
+    public function getSubpage(array $filters, $currentPage, $perPage): Paginator
+    {
+        $query = $this->buildQuery($filters);
+        $paginator = $this->paginate($query, $currentPage, $perPage);
+
+        return $paginator;
+    }
+
+    private function paginate($dql, $currentPage, $perPage): Paginator
+    {
+        $paginator = new Paginator($dql);
+        $paginator
+            ->getQuery()
+            ->setFirstResult($perPage * ($currentPage - 1))
+            ->setMaxResults($perPage);
+
+        return $paginator;
+    }
 }

@@ -24,22 +24,15 @@ use Doctrine\ORM\Exception\NotSupported;
 class ArticleController extends AbstractController
 {
     /**
-     * @Route("/", name="article_list")
+     * @Route("/{currentPage}/{perPage}", name="article_list")
      */
-    public function index(Request $request, ArticleRepository $articleRepository): Response
-    {
-        // $parameters = [
-        //     'from_date_filter',
-        //     'to_date_filter',
-        //     'sort_filter',
-        //     'articles_per_page_filter',
-        // ];
-        // foreach ($parameters as $parameter) {
-        //     $options[$parameter] = $request->query->get($parameter);
-        // }
-        dump($request->query->get('subpage'));
-        // $filters = [];
-        // $filters['subpages'] = 5;
+    public function index(
+        Request $request,
+        ArticleRepository $articleRepository,
+        $currentPage = 1,
+        $perPage = 10
+    ): Response {
+        $filters = [];
         $articles = [];
 
         $form = $this->createForm(FiltersType::class);
@@ -47,7 +40,6 @@ class ArticleController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $filters = $form->getData();
-            // throw new \Exception('some exception');
         }
 
         // TODO: try-catch chyba powinien być wprowadzony jako AOP? Tylko nie wiem jak się
@@ -55,15 +47,9 @@ class ArticleController extends AbstractController
         // Albo zrobić EventListener który słucha KernelEvents::EXCEPTION, sprawdza czy
         // if (instanceof ORMException) {wykonuje zawartość bloku catch} else {rzuca przechwywcony wyjątek dalej}
         try {
-            // throw new ORMException('exception');
-
-            // $filters['articles_per_page'] = $request->request->get('articles_per_page');
-            // $filters['subpage'] = $request->request->get('subpage');
-            $filters['subpage'] = ($request->query->get('subpage') !== null) ? $request->query->get('subpage') : 1;
-            // $request->request->get('my-pagination');
-            // $filters['subpages'] = 17;
-            $articles = $articleRepository->gatherList($request);
-            // dump($filters['subpages']);
+            $perPage = ($request->request->get('perPage')) ? $request->request->get('perPage') : $perPage;
+            $articles = $articleRepository->getSubpage($filters, $currentPage, $perPage);
+            $subpages = \ceil($articles->count() / $perPage);
         } catch (ORMException $exception) {
             $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
         }
@@ -71,8 +57,9 @@ class ArticleController extends AbstractController
         return $this->render('articles/index.html.twig', [
             'form' => $form->createView(),
             'articles' => $articles,
-            'metadata' => $filters,
-            // 'options' => $data,
+            'subpages' => $subpages,
+            'currentPage' => $currentPage,
+            // 'metadata' => $filters,
         ]);
     }
 

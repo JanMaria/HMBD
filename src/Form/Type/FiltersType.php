@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+//TODO: dodać walidację
 class FiltersType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -27,10 +28,10 @@ class FiltersType extends AbstractType
         ->add('sort_filter', ChoiceType::class, [
             'choices' => $options['sort_filter'],
             'placeholder' => 'brak',
-        ])
-        ->add('articles_per_page_filter', ChoiceType::class, [
-            'empty_data' => ['15' => 15],
-            'choices' => $options['articles_per_page_filter'],
+        // ])
+        // ->add('articles_per_page_filter', ChoiceType::class, [
+        //     'empty_data' => ['15' => 15],
+        //     'choices' => $options['articles_per_page_filter'],
         ]);
     }
 
