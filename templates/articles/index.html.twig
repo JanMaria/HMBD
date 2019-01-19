@@ -3,154 +3,164 @@
 {% block title %}Lista Artykułów{% endblock %}
 
 {% block body %}
-{{ parent() }}
+    {{ parent() }}
 
-<div class="modal fade" id="articleDeleteModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog">
+    <div class="modal fade" id="articleDeleteModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog">
 
-    <div class="modal-content">
-      <div class="modal-header">
-        <h4 class="modal-title">Usuń artykuł</h4>
-        <button type="button" class="close" data-dismiss="modal">&times;</button>
-      </div>
-      <div class="modal-body">
-        <form action={{ path('delete_article') }} method="post">
-          <p>Czy na pewno chcesz usunąć ten artykuł?</p>
-          <input type="hidden" name="article_id" id="artcl_id" value="">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h4 class="modal-title">Usuń artykuł</h4>
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+          </div>
+          <div class="modal-body">
+            <form action={{ path('delete_article') }} method="post">
+              <p>Czy na pewno chcesz usunąć ten artykuł?</p>
+              <input type="hidden" name="article_id" id="artcl_id" value="">
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
+              <button type="submit" class="btn btn-danger">Usuń</button>
+            </form>
+          </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Anuluj</button>
-          <button type="submit" class="btn btn-danger">Usuń</button>
-        </form>
+
       </div>
     </div>
 
-  </div>
-</div>
+    <!-- TODO: to tylko na potrzeby debugowania -->
+    <!-- <textarea id="myConsole" cols="50" rows="10"></textarea> -->
 
-<!-- TODO: to tylko na potrzeby debugowania -->
-<textarea id="myConsole" cols="50" rows="10"></textarea>
+    <form action={{ path('article_list') }} id="filters">
+        <div class="d-flex flex-row mb-3">
+            <!-- <div class="mr-auto p-2"> -->
+            {#TODO: czy potrzebuję tego ukrytego inputu? #}
+            <input type="hidden" id="searchQuery" name="searchQuery" value="">
+            <!-- </div> -->
+            <div class="p-2">
+            <!--TODO: tu jednak potrzebna walidacja -->
+            <input type="date" id="dateFrom" name="dateFrom" class="form-control">
+        </div>
 
-{{ form_start(form, {'attr': {'id': 'filters', 'nowalidate': 'nowalidate'}})}}
-<div class="d-flex flex-row mb-3">
-    {{ form_label(form.from_date_filter, 'Od:') }}
-    {{ form_widget(form.from_date_filter, {'attr': {'class': 'p-2', 'onblur': 'submitForm()'}}) }}
-
-
-<!-- </div> -->
-<!-- <div class="d-flex flex-row mb-3"> -->
-    {{ form_label(form.to_date_filter, 'Do:') }}
-    {{ form_widget(form.to_date_filter, {'attr': {'class': 'p-2', 'onblur': 'submitForm()'}}) }}
-
-    {{ form_label(form.sort_filter, 'Sortowanie:', {'label_attr': {'class': 'ml-auto p-2'}}) }}
-    {{ form_widget(form.sort_filter, {'attr': {'onchange': 'submitForm()'}}) }}
-    {{ form_errors(form.sort_filter, {'attr': {'class': 'p-2'}}) }}
-</div>
-
-{{ form_errors(form.from_date_filter) }}
-{{ form_errors(form.to_date_filter) }}
-{{ form_end(form) }}
-
-  {% if articles %}
-    <table id="articles" class="table table-striped">
-      <thead>
-        <tr>
-          <th>Tytuł</th>
-          <th>Autor</th>
-          <th>Utworzono</th>
-          <th>Opublikowano</th>
-          <th>Fragment</th>
-          <th>Akcje</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for article in articles %}
-          <tr>
-            <td>{{ article.title|truncate(50, true, '(...)')|wordwrap(30)|nl2br }}</td>
-            <td>{{ article.user.email }}</td>
-            <td>{{ article.createdAt|date('d-m-Y') }}</td>
-           <td>{{ article.isPublished ? 'Tak' : 'Nie' }}</td>
-            <td>{{ article.body|truncate(100, true, '(...)')|wordwrap(30)|nl2br }}</td>
-            <td class="d-flex justify-content-center">
-              <a href={{ path('article_show', { 'id': article.id }) }} class="btn btn-outline-primary btn-sm">Pokaż</a>
-
-              {% if is_granted('ROLE_ADMIN') and not article.isPublished %}
-                  <a href={{ path('publish_article', { 'id': article.id }) }} class="btn btn-outline-success btn-sm">Opublikuj</a>
-              {% endif %}
-
-              {% if is_granted('ROLE_ADMIN') or app.user is same as(article.user)  %}
-                <a href={{ path('edit_article', { 'id': article.id }) }} class="btn btn-outline-dark btn-sm">Edytuj</a>
-                <button class="btn btn-outline-danger btn-sm" data-toggle="modal"
-                  data-target="#articleDeleteModal" data-articleid={{ article.id }}>Usuń
-                </button>
-              {% endif %}
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-    </table>
-  {% else %}
-    <p>Brak artykułów</p>
-  {% endif %}
-
-    {#TODO: tu jeszcze  przechowywanie wybranej wartości #}
-    <form action="{{ path('article_list') }}">
-        <select name="perPage" id="perPage" onchange="this.form.submit()">
-            <option value="10">10</option>
-            <option value="15">15</option>
-            <option value="20">20</option>
-            <option value="25">25</option>
-            <option value="30">30</option>
-        </select>
+            <div class="p-2">
+            <input type="date" id="dateTo" name="dateTo" class="form-control">
+        </div>
+            <div class="p-2">
+            <input type="submit" value="Filtruj" class="btn btn-outline-success">
+        </div>
+        <div class="ml-auto p-2">
+            <select id="sort" name="sort" class="form-control m-2" onchange="this.form.submit();">
+                <option value="" selected disabled hidden><p class="text-muted">Sortuj wyniki...<p></option>
+                <option value="a.title-ASC">Nazwa - rosnąco</option>
+                <option value="a.title-DESC">Nazwa - malejąco</option>
+                <option value="a.createdAt-ASC">Data utworzenia - rosnąco</option>
+                <option value="a.createdAt-DESC">Data utworzenia - malejąco</option>
+            </select>
+        </div>
+        </div>
     </form>
-    {#{{ form_label(form.articles_per_page_filter, 'Ilość artykułów na stronie:') }}
-    {{ form_widget(form.articles_per_page_filter, {'attr': {'class': 'p-2', 'onchange': 'submitForm()'}}) }}
-    {{ form_errors(form.articles_per_page_filter, {'attr': {'class': 'p-2'}}) }}#}
 
+    {% if articles.count > 0 %}
+        <table id="articles" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Tytuł</th>
+                    <th>Autor</th>
+                    <th>Utworzono</th>
+                    <th>Opublikowano</th>
+                    <th>Fragment</th>
+                    <th>Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for article in articles %}
+                    <tr>
+                        <td>{{ article.title|truncate(50, true, '(...)')|wordwrap(30)|nl2br }}</td>
+                        <td>{{ article.user.email }}</td>
+                        <td>{{ article.createdAt|date('d-m-Y') }}</td>
+                        <td>{{ article.isPublished ? 'Tak' : 'Nie' }}</td>
+                        <td>{{ article.body|truncate(100, true, '(...)')|wordwrap(30)|nl2br }}</td>
+                        <td class="d-flex justify-content-center">
+                            <a href={{ path('article_show', { 'id': article.id }) }}
+                                class="btn btn-outline-primary btn-sm">Pokaż</a>
 
-    <nav>
-        <ul class="pagination">
-            {% if currentPage != 1 %}
-                <li class="page-item"><button class="page-link" data-subpage="1" onclick="setSubpage(this);">Pierwsza</a></li>
-            {% endif %}
-            {% for i in 1..subpages if i >= currentPage - 3 and i <= currentPage + 3 %}
-            <li class="page-item">
-                <a href="{{ path('article_list', {'currentPage': i}) }}" class="page-link">{{ i }}</a>
-            </li>
-            {#<li class="page-item"><button class="page-link" data-subpage="{{ i }}" onclick="setSubpage(this);">{{ i }}</button></li>#}
-            {% endfor %}
-            {% if currentPage != subpages %}
-                <li class="page-item"><button class="page-link" data-subpage="{{ subpages }}" onclick="setSubpage(this);">Ostatnia</a></li>
-            {% endif %}
-        </ul>
-    </nav>
+                            {% if is_granted('ROLE_ADMIN') and not article.isPublished %}
+                                <a href={{ path('publish_article', { 'id': article.id }) }}
+                                    class="btn btn-outline-success btn-sm">Opublikuj</a>
+                            {% endif %}
 
+                            {% if is_granted('ROLE_ADMIN') or app.user is same as(article.user)  %}
+                                <a href={{ path('edit_article', { 'id': article.id }) }}
+                                    class="btn btn-outline-dark btn-sm">Edytuj</a>
+                                <button class="btn btn-outline-danger btn-sm" data-toggle="modal"
+                                    data-target="#articleDeleteModal" data-articleid={{ article.id }}>Usuń
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Brak artykułów</p>
+    {% endif %}
+
+    <select name="perPage" id="perPage" form="filters" onchange="this.form.submit()" class="form-group">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+        <option value="25">25</option>
+        <option value="30">30</option>
+    </select>
+
+    <form action="{{ path('article_list') }}">
+        {% if articles.count > 0 %}
+            <nav>
+                <ul class="pagination">
+                    {% if currentPage != 1 %}
+                        <li class="page-item m-2">
+                            <a href="{{ path('article_list', {'currentPage': 1}|merge(metadata)) }}"
+                                class="page-link">Pierwsza
+                            </a>
+                        </li>
+                    {% endif %}
+                    {% for i in 1..(articles.count/metadata['perPage'])|round(0, 'ceil') %}
+                        <li class="page-item m-2">
+                            <a href="{{ path('article_list', {'currentPage': i}|merge(metadata)) }}"
+                                class="page-link">{{ i }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                    {% if currentPage != (articles.count/metadata['perPage'])|round(0, 'ceil') %}
+                        <li class="page-item m-2">
+                            <a href="{{ path('article_list',
+                                {'currentPage': (articles.count/metadata['perPage'])|round(0, 'ceil')}|merge(metadata)) }}"
+                                class="page-link">Ostatnia
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </form>
 
 {% endblock %}
 
 {% block javascripts %}
     <script>
         $('#articleDeleteModal').on('show.bs.modal', function(event){
-            var button = $(event.relatedTarget)
-            var article_id = button.data('articleid')
-            var mdl = $(this)
+            var button = $(event.relatedTarget);
+            var article_id = button.data('articleid');
+            var mdl = $(this);
 
             mdl.find('.modal-body #artcl_id').val(article_id);
+        });
+        //TODO:  currentPage nie jest inputem
+        $.each({{ metadata|json_encode|raw }}, function(index, value) {
+            document.getElementById(index).value = value;
+
+        document.getElementById("searchQuery").value = document.getElementById("query").value;
         })
     </script>
-
-    <!-- <script>
-        function setSubpage(btn) {
-            var subpage = document.getElementById('subpage');
-            subpage.value = btn.dataset.subpage;
-            subpage.form.submit();
-        }
-    </script> -->
-
-    <script>
-    function submitForm() {
-        document.getElementById('filters').submit();
-    }
-    </script>
-
 {% endblock %}

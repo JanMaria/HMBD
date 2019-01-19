@@ -24,42 +24,42 @@ use Doctrine\ORM\Exception\NotSupported;
 class ArticleController extends AbstractController
 {
     /**
-     * @Route("/{currentPage}", name="article_list")
+     * @Route("/{currentPage<\d+>}", defaults={"currentPage"=1}, name="article_list")
      */
-    public function index(
-        Request $request,
-        ArticleRepository $articleRepository,
-        $currentPage = 1,
-        $perPage = 10
-    ): Response {
-        $filters = [];
-        $articles = [];
-
-        $form = $this->createForm(FiltersType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $filters = $form->getData();
+    public function index(Request $request, ArticleRepository $articleRepository, $currentPage): Response
+    {
+        $metadata = [];
+        if ($request->getQueryString() !== null) {
+            $tempMetadata = explode('&', $request->getQueryString());
+            foreach ($tempMetadata as $data) {
+                $data = explode('=', $data);
+                $metadata[$data[0]] = $data[1];
+            }
         }
+        dump($metadata);
 
-        // TODO: try-catch chyba powinien być wprowadzony jako AOP? Tylko nie wiem jak się
-        // to robi jeszcze. I czy się da.
-        // Albo zrobić EventListener który słucha KernelEvents::EXCEPTION, sprawdza czy
-        // if (instanceof ORMException) {wykonuje zawartość bloku catch} else {rzuca przechwywcony wyjątek dalej}
-        try {
-            $perPage = ($request->query->get('perPage')) ? $request->query->get('perPage') : $perPage;
-            $articles = $articleRepository->getSubpage($filters, $currentPage, $perPage);
-            $subpages = \ceil($articles->count() / $perPage);
-        } catch (ORMException $exception) {
-            $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
-        }
+        // $currentPage = ($request->query->get('currentPage') === null) ? 1 : $request->query->get('currentPage');
+        $metadata['perPage'] = ($request->query->get('perPage') === null) ? 10 : $request->query->get('perPage');
+        // $perPage = ($request->query->get('perPage') === null) ? 10 : $request->query->get('perPage');
+
+        // $form = $this->createForm(FiltersType::class);
+        // $form->handleRequest($request);
+        //
+        // if ($form->isSubmitted() && $form->isValid()) {
+        //     $filters = $form->getData();
+        // }
+
+            // $perPage = ($request->query->get('perPage')) ? $request->query->get('perPage') : $perPage;
+        $articles = $articleRepository->getSubpage($metadata, $currentPage, $metadata['perPage']);
+            // $subpages = \ceil($articles->count() / $perPage);
 
         return $this->render('articles/index.html.twig', [
-            'form' => $form->createView(),
+            // 'form' => $form->createView(),
             'articles' => $articles,
-            'subpages' => $subpages,
+            // 'subpages' => $subpages,
             'currentPage' => $currentPage,
-            // 'metadata' => $filters,
+            // 'perPage' => $perPage,
+            'metadata' => $metadata,
         ]);
     }
 

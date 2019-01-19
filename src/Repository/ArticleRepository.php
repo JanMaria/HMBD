@@ -25,7 +25,7 @@ class ArticleRepository extends ServiceEntityRepository
         $this->security = $security;
     }
 
-    private function buildSecurityPart(QueryBuilder $qb): QueryBuilder
+    private function buildSecurityPart(QueryBuilder $qb)//: QueryBuilder
     {
         if (!$this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
             $qb->andWhere('a.isPublished = 1');
@@ -35,7 +35,22 @@ class ArticleRepository extends ServiceEntityRepository
                 ->setParameter('thisUser', $this->security->getUser());
         }
 
-        return $qb;
+        // return $qb;
+    }
+
+    private function buildDateRangePart(array $filters, QueryBuilder $qb)//: QueryBuilder
+    {
+        if (\array_key_exists('dateFrom', $filters) && $filters['dateFrom'] !== "") {
+            $qb
+            ->andWhere($qb->expr()->gte('a.createdAt', str_replace("-", "", $filters['dateFrom'])));
+        }
+
+        if (\array_key_exists('dateTo', $filters) && $filters['dateTo'] !== "") {
+            $qb
+            ->andWhere($qb->expr()->lt('a.createdAt', str_replace("-", "", $filters['dateTo'])));
+        }
+
+        // return $qb;
     }
 
     // private function buildSearchPart(array $filters, QueryBuilder $qb): QueryBuilder
@@ -63,23 +78,26 @@ class ArticleRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('a');
 
         $this->buildSecurityPart($qb);
+        $this->buildDateRangePart($filters, $qb);
 
-        if (\array_key_exists('from_date_filter', $filters) && $filters['from_date_filter'] !== null) {
-            $qb
-            ->andWhere($qb->expr()->gte('a.createdAt', $filters['from_date_filter']->format('Ymd')));
-                // ->andWhere('a.createdAt >= :from_date_filter')
-                // ->setParameter('from_date_filter', $filters['from_date_filter']);
-        }
+        // if (\array_key_exists('dateFrom', $filters) && $filters['dateFrom'] !== "") {
+        //     // dd('date from: '.$filters['dateFrom']);
+        //     // ->format('Ymd')
+        //     $qb
+        //     ->andWhere($qb->expr()->gte('a.createdAt', str_replace("-", "", $filters['dateFrom'])));
+        //         // ->andWhere('a.createdAt >= :from_date_filter')
+        //         // ->setParameter('from_date_filter', $filters['from_date_filter']);
+        // }
+        //
+        // if (\array_key_exists('dateTo', $filters) && $filters['dateTo'] !== "") {
+        //     $qb
+        //     ->andWhere($qb->expr()->lt('a.createdAt', str_replace("-", "", $filters['dateTo'])));
+        //         // ->andWhere('a.createdAt >= :from_date_filter')
+        //         // ->setParameter('from_date_filter', $filters['from_date_filter']);
+        // }
 
-        if (\array_key_exists('to_date_filter', $filters) && $filters['to_date_filter'] !== null) {
-            $qb
-            ->andWhere($qb->expr()->lt('a.createdAt', $filters['to_date_filter']->format('Ymd')));
-                // ->andWhere('a.createdAt >= :from_date_filter')
-                // ->setParameter('from_date_filter', $filters['from_date_filter']);
-        }
-
-        if (\array_key_exists('sort_filter', $filters) && $filters['sort_filter'] !== null) {
-            $sortMethod = \explode('-', $filters['sort_filter']);
+        if (\array_key_exists('sort', $filters) && $filters['sort'] !== null) {
+            $sortMethod = \explode('-', $filters['sort']);
             $qb->orderBy($sortMethod[0], $sortMethod[1]);
         }
 
@@ -88,8 +106,11 @@ class ArticleRepository extends ServiceEntityRepository
         return $qb->getQuery();
     }
 
+    // public function getSubpage(array $filters, $currentPage = 1, $perPage = 10): Paginator
     public function getSubpage(array $filters, $currentPage, $perPage): Paginator
     {
+        $currentPage = ($currentPage === null) ? 1: $currentPage;
+        $perPage = ($perPage === null) ? 1: $perPage;
         $query = $this->buildQuery($filters);
         $paginator = $this->paginate($query, $currentPage, $perPage);
 
