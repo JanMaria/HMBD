@@ -63,6 +63,14 @@ class ArticleRepository extends ServiceEntityRepository
     // }
 
 
+    private function buildTitleSearchPart(array $filters, QueryBuilder $qb)
+    {
+        if (\array_key_exists('searchQuery', $filters) && $filters['searchQuery'] !== "") {
+            $qb
+                ->andWhere('a.title LIKE :partialTitle')
+                ->setParameter('partialTitle', '%'.$filters['searchQuery'].'%');
+        }
+    }
 
     // public function findByPartialTitle($partialTitle)
     // {
@@ -79,6 +87,7 @@ class ArticleRepository extends ServiceEntityRepository
 
         $this->buildSecurityPart($qb);
         $this->buildDateRangePart($filters, $qb);
+        $this->buildTitleSearchPart($filters, $qb);
 
         // if (\array_key_exists('dateFrom', $filters) && $filters['dateFrom'] !== "") {
         //     // dd('date from: '.$filters['dateFrom']);

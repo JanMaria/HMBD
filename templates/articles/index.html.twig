@@ -31,25 +31,24 @@
     <!-- TODO: to tylko na potrzeby debugowania -->
     <!-- <textarea id="myConsole" cols="50" rows="10"></textarea> -->
 
-    <form action={{ path('article_list') }} id="filters">
+    <!-- <form action={{ path('article_list') }} id="filters"> -->
         <div class="d-flex flex-row mb-3">
             <!-- <div class="mr-auto p-2"> -->
             {#TODO: czy potrzebuję tego ukrytego inputu? #}
-            <input type="hidden" id="searchQuery" name="searchQuery" value="">
+            <!-- <input type="hidden" id="searchQuery" name="searchQuery" value=""> -->
             <!-- </div> -->
             <div class="p-2">
-            <!--TODO: tu jednak potrzebna walidacja -->
-            <input type="date" id="dateFrom" name="dateFrom" class="form-control">
+            <input form="filters" type="date" id="dateFrom" name="dateFrom" class="form-control">
         </div>
 
             <div class="p-2">
-            <input type="date" id="dateTo" name="dateTo" class="form-control">
+            <input form="filters" type="date" id="dateTo" name="dateTo" class="form-control">
         </div>
             <div class="p-2">
-            <input type="submit" value="Filtruj" class="btn btn-outline-success">
+            <input form="filters" type="submit" value="Filtruj" class="btn btn-outline-success">
         </div>
         <div class="ml-auto p-2">
-            <select id="sort" name="sort" class="form-control m-2" onchange="this.form.submit();">
+            <select form="filters" id="sort" name="sort" class="form-control m-2" onchange="this.form.submit();">
                 <option value="" selected disabled hidden><p class="text-muted">Sortuj wyniki...<p></option>
                 <option value="a.title-ASC">Nazwa - rosnąco</option>
                 <option value="a.title-DESC">Nazwa - malejąco</option>
@@ -58,7 +57,7 @@
             </select>
         </div>
         </div>
-    </form>
+    <!-- </form> -->
 
     {% if articles.count > 0 %}
         <table id="articles" class="table table-striped">
@@ -105,45 +104,52 @@
         <p>Brak artykułów</p>
     {% endif %}
 
-    <select name="perPage" id="perPage" form="filters" onchange="this.form.submit()" class="form-group">
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="15">15</option>
-        <option value="20">20</option>
-        <option value="25">25</option>
-        <option value="30">30</option>
-    </select>
+    <div class="d-flex justify-content-start">
+        <div class="p-2"><p>Ilość artykułów na stronie: </p></div>
+        <div class="p-2">
+            <select name="perPage" id="perPage" form="filters" onchange="this.form.submit()" class="form-control">
+                <option value="5">5</option>
+                <option value="10">10</option>
+                <option value="15">15</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="30">30</option>
+            </select>
+        </div>
+    </div>
 
-    <form action="{{ path('article_list') }}">
-        {% if articles.count > 0 %}
-            <nav>
-                <ul class="pagination">
-                    {% if currentPage != 1 %}
-                        <li class="page-item m-2">
-                            <a href="{{ path('article_list', {'currentPage': 1}|merge(metadata)) }}"
-                                class="page-link">Pierwsza
-                            </a>
-                        </li>
-                    {% endif %}
-                    {% for i in 1..(articles.count/metadata['perPage'])|round(0, 'ceil') %}
-                        <li class="page-item m-2">
-                            <a href="{{ path('article_list', {'currentPage': i}|merge(metadata)) }}"
-                                class="page-link">{{ i }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                    {% if currentPage != (articles.count/metadata['perPage'])|round(0, 'ceil') %}
-                        <li class="page-item m-2">
-                            <a href="{{ path('article_list',
-                                {'currentPage': (articles.count/metadata['perPage'])|round(0, 'ceil')}|merge(metadata)) }}"
-                                class="page-link">Ostatnia
-                            </a>
-                        </li>
-                    {% endif %}
-                </ul>
-            </nav>
-        {% endif %}
-    </form>
+    <div class="d-flex justify-content-center">
+        <form action="{{ path('article_list') }}">
+            {% if articles.count > 0 %}
+                <nav>
+                    <ul class="pagination">
+                        {% if currentPage != 1 %}
+                            <li class="page-item m-2">
+                                <a href="{{ path('article_list', {'currentPage': 1}|merge(metadata)) }}"
+                                    class="page-link">Pierwsza
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% for i in 1..(articles.count/metadata['perPage'])|round(0, 'ceil') %}
+                            <li class="page-item m-2">
+                                <a href="{{ path('article_list', {'currentPage': i}|merge(metadata)) }}"
+                                    class="page-link">{{ i }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                        {% if currentPage != (articles.count/metadata['perPage'])|round(0, 'ceil') %}
+                            <li class="page-item m-2">
+                                <a href="{{ path('article_list',
+                                    {'currentPage': (articles.count/metadata['perPage'])|round(0, 'ceil')}|merge(metadata)) }}"
+                                    class="page-link">Ostatnia
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        </form>
+    </div>
 
 {% endblock %}
 
@@ -156,11 +162,19 @@
 
             mdl.find('.modal-body #artcl_id').val(article_id);
         });
+
+        // document.getElementById("searchQuery").value = document.getElementById("query").value;
+
         //TODO:  currentPage nie jest inputem
         $.each({{ metadata|json_encode|raw }}, function(index, value) {
             document.getElementById(index).value = value;
+        });
 
-        document.getElementById("searchQuery").value = document.getElementById("query").value;
-        })
+        // if($('#qry').length > 0 && $('#qry').val() != ''){
+        //     var query = $('#qry').val();
+        //     $('#searchQuery').val(query);
+        //     //$('#filters').submit();
+        //     // document.getElementById('searchQuery').value = document.getElementById('query').value;
+        // }
     </script>
 {% endblock %}

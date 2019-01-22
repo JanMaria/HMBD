@@ -1,40 +1,47 @@
 <nav class="navbar navbar-expand-sm navbar-dark bg-dark mb-4">
-<div class="container">
-  <a href="" class="navbar-brand">Projekt CRUD</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mobile-nav">
-    <span class="navbar-toggle-icon"></span>
-  </button>
+    <div class="container">
+        <a href="" class="navbar-brand">Projekt CRUD</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mobile-nav">
+            <span class="navbar-toggle-icon"></span>
+        </button>
 
-  <div class="collapse navbar-collapse" id="mobile-nav">
-    <ul class="navbar-nav ml-auto">
-      <li class="nav-item">
-        <a href={{ path('article_list') }} class="nav-link">Lista Artykułów</a>
-      </li>
-      {% if is_granted('ROLE_ADMIN') %}
-      <li class="nav-item">
-        <a href={{ path('new_article') }} class="nav-link">Dodaj Artykuł</a>
-      </li>
-      {% endif %}
-      <li class="search-form">
-        <form action={{ path('article_search') }} class="form-inline">
-          <input type="text" id="query" name="query" placeholder="Szukaj..." class="form-control">
-          <input type="submit" value="Szukaj" class="btn btn-primary">
-        </form>
-      </li>
-      {% if not is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-      <li class="nav-item">
-        <a href={{ path('user_registration') }} class="nav-link">Rejestracja</a>
-      </li>
-      <li class="nav-item">
-        <a href={{ path('app_login') }} class="nav-link">Logowanie</a>
-      </li>
-      {% else %}
-      <!-- Tu pewnie będzie jakiś rozwijany panel użytkownika -->
-      <li class="nav-item">
-        <a href={{ path('app_logout') }} class="nav-link">Wyloguj</a>
-      </li>
-      {% endif %}
-    </ul>
-  </div>
-</div>
+        <div class="collapse navbar-collapse" id="mobile-nav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a href={{ path('article_list') }} class="nav-link">Lista Artykułów</a>
+                </li>
+                {% if is_granted('ROLE_ADMIN') %}
+                <li class="nav-item">
+                    <a href={{ path('new_article') }} class="nav-link">Dodaj Artykuł</a>
+                </li>
+                {% endif %}
+                <li class="search-form">
+                    <form id="filters" name="filters" action="{{ path('article_list', {'searchQuery': 'bla'}) }}" class="form-inline">
+                        <input type="text" id="searchQuery" name="searchQuery" placeholder="Szukaj..." class="form-control">
+                        <!-- <input type="text" id="qry" name="qry" placeholder="Szukaj..." class="form-control"> -->
+                        <input type="submit" value="Szukaj" class="btn btn-primary">
+                    </form>
+                </li>
+                {% if not is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                <li class="nav-item">
+                    <a href={{ path('user_registration') }} class="nav-link">Rejestracja</a>
+                </li>
+                <li class="nav-item">
+                    <a href={{ path('app_login') }} class="nav-link">Logowanie</a>
+                </li>
+                {% else %}
+                <!-- Tu pewnie będzie jakiś rozwijany panel użytkownika -->
+                <li class="nav-item">
+                    <a href={{ path('app_logout') }} class="nav-link">Wyloguj</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
 </nav>
+
+<script>
+    function passQuery(){
+        $('query')
+    }
+</script>
