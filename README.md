@@ -38,10 +38,10 @@
 - `[x]` Przyciski "Opublikuj" i "Usuń" widoczne tylko dla Adminów
 - `[x]` **Edit** Przycisk "Opublikuj" powinien kierować do akcji bez widoku i ta akcja powinna przekierowywać z powrotem na listę z dodaną wiadomością flash czy publikacją się udała czy nie.
 - `[x]` Przycisk "Edytuj" widoczny tylko dla użytkowników. Przy zwykłych użytkownikach tylko przy artykułach, które zostały utworzone przez nich, zaś dla adminów przy wszystkich.
-- Nad tabelą z lewej strony dwa inputy do filtrowania listy, gdzie użytkownik będzie mógł wpisać daty OD - DO i na tej podstawie wyfiltrujesz wyświetlane artykuły
-- Nad tabelą z prawej strony selekt z sortowaniem: "Nazwa - rosnąco", "Nazwa - malejąco", "Data utworzenia - rosnąco", "Data utworzenia - malejąco"
-- Paginacja listy. Jednorazowo wyświetlane jest 10 artykułów.
-- Pod tabelą, ale nad paginacją możliwość wybrania ilości wyświetlanych artykułów na liście. Niech będzie 10|15|20|25|30
+- `[x]` Nad tabelą z lewej strony dwa inputy do filtrowania listy, gdzie użytkownik będzie mógł wpisać daty OD - DO i na tej podstawie wyfiltrujesz wyświetlane artykuły
+- `[x]` Nad tabelą z prawej strony selekt z sortowaniem: "Nazwa - rosnąco", "Nazwa - malejąco", "Data utworzenia - rosnąco", "Data utworzenia - malejąco"
+- `[x]` Paginacja listy. Jednorazowo wyświetlane jest 10 artykułów.
+- `[x]` Pod tabelą, ale nad paginacją możliwość wybrania ilości wyświetlanych artykułów na liście. Niech będzie 10|15|20|25|30
 
 ## Ad. Strona pojedynczego artykułu
 - Dodajemy zdjęcie do artykułu.
