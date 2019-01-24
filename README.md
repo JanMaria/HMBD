@@ -30,6 +30,7 @@
 * Super Admin
   * może zarządzać adminami
 
+Proszę utworzyć po jednym użytkowniku dla każdej z ról z hasłem **demo1234** i żeby oni zawsze byli w zrzucie bazy.
 
 # SZCZEGÓŁOWY OPIS STRON
 ## Ad. Lista artykułów
