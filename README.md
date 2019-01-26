@@ -31,13 +31,14 @@
   * może zarządzać adminami
 
 Proszę utworzyć po jednym użytkowniku dla każdej z ról z hasłem **demo1234** i żeby oni zawsze byli w zrzucie bazy.
+[nie ogarnąłem tego hasła przed zrobieniem pull requesta; obecnie jest **test789**]
 
 # SZCZEGÓŁOWY OPIS STRON
 ## Ad. Lista artykułów
-- Lista w postaci tabeli. Przemyśl, które pola encji powinny zostać zawarte w tabeli, a które dopiero w formularzu.
+- `[x]` Lista w postaci tabeli. Przemyśl, które pola encji powinny zostać zawarte w tabeli, a które dopiero w formularzu.
 - `[x]` Dodatkowa kolumna z przyciskami (Pokaż, Edytuj, Usuń, Opublikuj)
 - `[x]` Przyciski "Opublikuj" i "Usuń" widoczne tylko dla Adminów
-- `[x]` **Edit** Przycisk "Opublikuj" powinien kierować do akcji bez widoku i ta akcja powinna przekierowywać z powrotem na listę z dodaną wiadomością flash czy publikacją się udała czy nie.
+- `[x]` [x] Przycisk "Opublikuj" powinien kierować do akcji bez widoku i ta akcja powinna przekierowywać z powrotem na listę z dodaną wiadomością flash czy publikacją się udała czy nie.
 - `[x]` Przycisk "Edytuj" widoczny tylko dla użytkowników. Przy zwykłych użytkownikach tylko przy artykułach, które zostały utworzone przez nich, zaś dla adminów przy wszystkich.
 - `[x]` Nad tabelą z lewej strony dwa inputy do filtrowania listy, gdzie użytkownik będzie mógł wpisać daty OD - DO i na tej podstawie wyfiltrujesz wyświetlane artykuły
 - `[x]` Nad tabelą z prawej strony selekt z sortowaniem: "Nazwa - rosnąco", "Nazwa - malejąco", "Data utworzenia - rosnąco", "Data utworzenia - malejąco"
@@ -86,7 +87,7 @@ Proszę utworzyć po jednym użytkowniku dla każdej z ról z hasłem **demo1234
 
 
 # INNE FEATURE'Y:
-* Logowanie akcji użytkownika (osobna encja UserLogs). Logujemy następujące akcje użytkownika: poprawne logowanie, niepoprawne logowanie.
+* `[x]` Logowanie akcji użytkownika (osobna encja UserLogs). Logujemy następujące akcje użytkownika: poprawne logowanie, niepoprawne logowanie.
 * Zapis na newsletter. Przygotuj stopkę, oczywiście nie styluj jej jakoś super, po prostu ma wyglądać po ludzku, a nie straszyć wyglądem. W niej dodaj formularz z inputem do zapisu na newsletter, gdzie ktokolwiek może wpisać email. Zapisuj te adresy e-mail w encji Newsletter.
 
 # KOMENDY
