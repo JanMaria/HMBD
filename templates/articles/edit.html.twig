@@ -9,13 +9,8 @@
     {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
     {{ form_errors(form.title) }}
 
-  {% if is_granted("ROLE_ADMIN") %}
     {{ form_label(form.user, 'Autor:') }}
     {{ form_widget(form.user, {'attr': {'class': 'form-control'}}) }}
-    {{ form_errors(form.user) }}
-  {% else %}
-    {{ form(form.user, {'attr': {'hidden': 'hidden'}}) }}
-  {% endif %}
 
     {{ form_label(form.createdAt, 'Data utworzenia (dd-mm-rrrr):') }}
     {{ form_widget(form.createdAt, {'attr': {'class': 'form-control'}})}}
@@ -23,9 +18,9 @@
 
     {{ form_label(form.isPublished, 'Opublikowano:') }}
     {% if is_granted("ROLE_ADMIN") %}
-    {{ form_widget(form.isPublished, {'attr': {'class': 'form-check'}}) }}
+        {{ form_widget(form.isPublished, {'attr': {'class': 'form-check'}}) }}
     {% else %}
-    {{ form_widget(form.isPublished, {'attr': {'disabled': 'disabled', 'class': 'form-check'}}) }}
+        {{ form_widget(form.isPublished, {'attr': {'disabled': 'disabled', 'class': 'form-check'}}) }}
     {% endif %}
 
     {{ form_label(form.body, 'Treść:') }}
@@ -33,7 +28,6 @@
       'class': 'form-control',
       'rows': 5,
     }}) }}
-    {{ form_errors(form.body) }}
   <div>
     {{ form_widget(form.save, {
       'attr': {'class': 'btn btn-primary'},

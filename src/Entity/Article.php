@@ -6,7 +6,6 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use App\Validator\Constraints as MyAssert;
 
 /**
 * @ORM\Entity(repositoryClass="App\Repository\ArticleRepository")
@@ -27,18 +26,6 @@ class Article
     * )
     */
     private $title;
-
-    // /**
-    // * @ORM\Column()
-    // * @Assert\NotBlank(
-    // *     message = "To pole nie może być puste"
-    // * )
-    // * @Assert\Email(
-    // *     message = "{{ value }} nie jest poprawnym adresem e-mail"
-    // * )
-    // * @MyAssert\IsExistingUser
-    // */
-    // private $authorEmail;
 
     /**
     * @ORM\Column(type="datetime")

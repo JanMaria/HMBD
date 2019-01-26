@@ -10,7 +10,7 @@
                 <li class="nav-item">
                     <a href={{ path('article_list') }} class="nav-link">Lista Artykułów</a>
                 </li>
-                {% if is_granted('ROLE_ADMIN') %}
+                {% if is_granted('ROLE_USER') %}
                 <li class="nav-item">
                     <a href={{ path('new_article') }} class="nav-link">Dodaj Artykuł</a>
                 </li>

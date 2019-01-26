@@ -63,38 +63,23 @@ class ArticleController extends AbstractController
         ]);
     }
 
-    private function gatherList()
-    {
-        $repo = $this->getDoctrine()->getRepository(Article::class);
-        $articleList = [];
-        if ($this->isGranted('ROLE_ADMIN')) {
-            $articleList = $repo->findAll();
-        } else {
-            $articleList = $repo->findBy(['isPublished' => true]);
-            $articleList = ($this->isGranted('IS_AUTHENTICATED_FULLY')) ?
-            \array_merge($articleList, $repo->findBy(['user' => $this->getUser()])) : $articleList;
-        }
-
-        return $articleList;
-    }
-
-    /**
-     * @Route("/search", name="article_search")
-     */
-    public function search(Request $request): Response
-    {
-        $query = $request->query->get('query');
-        $articles = null;
-        try {
-            throw new \Exception('sth');
-            $articles = $this->getDoctrine()->getRepository(Article::class)->findByPartialTitle($query);
-        // } catch (ORMException $exception) {
-        } catch (\Exception $exception) {
-            $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
-        }
-
-        return $this->render('articles/index.html.twig', ['articles' => $articles]);
-    }
+    // /**
+    //  * @Route("/search", name="article_search")
+    //  */
+    // public function search(Request $request): Response
+    // {
+    //     $query = $request->query->get('query');
+    //     $articles = null;
+    //     try {
+    //         throw new \Exception('sth');
+    //         $articles = $this->getDoctrine()->getRepository(Article::class)->findByPartialTitle($query);
+    //     // } catch (ORMException $exception) {
+    //     } catch (\Exception $exception) {
+    //         $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
+    //     }
+    //
+    //     return $this->render('articles/index.html.twig', ['articles' => $articles]);
+    // }
 
     /**
      * @Route("/article/new", name="new_article")
@@ -108,19 +93,16 @@ class ArticleController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                // throw new \Exception('');
                 $handler->handleForm($form);
-            // } catch (\Exception $exception) {
             } catch (ORMException $exception) {
-                $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
-                goto end;
+                $this->addFlash('dbFailure', 'Nie udało się dodać artykułu');
+                return $this->render('articles/edit.html.twig', ['form' => $form->createView()]);
             }
 
             $this->addFlash('success', 'Dodano artykuł');
 
             return $this->redirectToRoute('article_list');
         }
-        end:
         return $this->render('articles/edit.html.twig', ['form' => $form->createView()]);
     }
 
@@ -130,12 +112,14 @@ class ArticleController extends AbstractController
      */
     public function edit(Request $request, Article $article): Response
     {
-        $form = $this->createForm(ArticleType::class, $article, [
-          'isPublishedOptions' => [
-            'tak' => true,
-            'nie' => false,
-          ]
-        ]);
+        $form = $this->createForm(ArticleType::class, $article);
+
+        // , [
+        //   'isPublishedOptions' => [
+        //     'tak' => true,
+        //     'nie' => false,
+        //   ]
+        // ]
 
         $form->handleRequest($request);
 
@@ -143,14 +127,13 @@ class ArticleController extends AbstractController
             try {
                 $this->getDoctrine()->getManager()->flush();
             } catch (ORMException $exception) {
-                $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
-                goto end;
+                $this->addFlash('dbFailure', 'Nie udało się zedytować artykułu');
+                return $this->render('articles/edit.html.twig', ['form' => $form->createView()]);
             }
             $this->addFlash('success', 'Artykuł został zedytowany');
 
             return $this->redirectToRoute('article_list');
         }
-        end:
         return $this->render('articles/edit.html.twig', ['form' => $form->createView()]);
     }
 
@@ -183,24 +166,25 @@ class ArticleController extends AbstractController
     }
 
     /**
-     * @Route("/article/publish/{id}", name="publish_article")
+     * @Route("/article/publish/{id}", name="de_publish_article")
      * @Security("is_granted('ROLE_ADMIN')")
      */
-    public function publish(Article $article): Response
+    public function changeIsPublished(Article $article): Response
     {
         if (!$article->getIsPublished()) {
             $article->setIsPublished(true);
+        } else {
+            $article->setIsPublished(false);
         }
 
         try {
             $this->getDoctrine()->getManager()->flush();
         } catch (ORMException $exception) {
-            $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
-            goto end;
+            $this->addFlash('dbFailure', 'Nie udało się zmienić opcji isPublished');
+            return $this->redirectToRoute('article_list');
         }
-        $this->addFlash('success', 'Artykuł został opublikowany');
+        $this->addFlash('success', 'Opcja isPublished została zmieniona');
 
-        end:
         return $this->redirectToRoute('article_list');
     }
 }

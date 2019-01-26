@@ -33,10 +33,6 @@
 
     <!-- <form action={{ path('article_list') }} id="filters"> -->
         <div class="d-flex flex-row mb-3">
-            <!-- <div class="mr-auto p-2"> -->
-            {#TODO: czy potrzebuję tego ukrytego inputu? #}
-            <!-- <input type="hidden" id="searchQuery" name="searchQuery" value=""> -->
-            <!-- </div> -->
             <div class="p-2">
             <input form="filters" type="date" id="dateFrom" name="dateFrom" class="form-control">
         </div>
@@ -66,7 +62,9 @@
                     <th>Tytuł</th>
                     <th>Autor</th>
                     <th>Utworzono</th>
-                    <th>Opublikowano</th>
+                    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                        <th>Publikacja</th>
+                    {% endif %}
                     <th>Fragment</th>
                     <th>Akcje</th>
                 </tr>
@@ -77,16 +75,25 @@
                         <td>{{ article.title|truncate(50, true, '(...)')|wordwrap(30)|nl2br }}</td>
                         <td>{{ article.user.email }}</td>
                         <td>{{ article.createdAt|date('d-m-Y') }}</td>
-                        <td>{{ article.isPublished ? 'Tak' : 'Nie' }}</td>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <td>
+                                {% if article.isPublished %}
+                                    <a href={{ path('de_publish_article', { 'id': article.id }) }}
+                                    class="btn btn-outline-danger btn-sm">Depublikuj</a>
+                                {% else %}
+                                    <a href={{ path('de_publish_article', { 'id': article.id }) }}
+                                    class="btn btn-outline-success btn-sm">Opublikuj</a>
+                                {% endif %}
+                            </td>
+                            {% elseif is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                                <td>
+                                    {{ article.isPublished ? 'Tak' : 'Nie' }}
+                                </td>
+                            {% endif %}
                         <td>{{ article.body|truncate(100, true, '(...)')|wordwrap(30)|nl2br }}</td>
                         <td class="d-flex justify-content-center">
                             <a href={{ path('article_show', { 'id': article.id }) }}
                                 class="btn btn-outline-primary btn-sm">Pokaż</a>
-
-                            {% if is_granted('ROLE_ADMIN') and not article.isPublished %}
-                                <a href={{ path('publish_article', { 'id': article.id }) }}
-                                    class="btn btn-outline-success btn-sm">Opublikuj</a>
-                            {% endif %}
 
                             {% if is_granted('ROLE_ADMIN') or app.user is same as(article.user)  %}
                                 <a href={{ path('edit_article', { 'id': article.id }) }}
@@ -163,18 +170,8 @@
             mdl.find('.modal-body #artcl_id').val(article_id);
         });
 
-        // document.getElementById("searchQuery").value = document.getElementById("query").value;
-
-        //TODO:  currentPage nie jest inputem
         $.each({{ metadata|json_encode|raw }}, function(index, value) {
             document.getElementById(index).value = value;
         });
-
-        // if($('#qry').length > 0 && $('#qry').val() != ''){
-        //     var query = $('#qry').val();
-        //     $('#searchQuery').val(query);
-        //     //$('#filters').submit();
-        //     // document.getElementById('searchQuery').value = document.getElementById('query').value;
-        // }
     </script>
 {% endblock %}
