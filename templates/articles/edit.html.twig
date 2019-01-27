@@ -16,11 +16,9 @@
     {{ form_widget(form.createdAt, {'attr': {'class': 'form-control'}})}}
     {{ form_errors(form.createdAt) }}
 
-    {{ form_label(form.isPublished, 'Opublikowano:') }}
-    {% if is_granted("ROLE_ADMIN") %}
+    {% if form.isPublished is defined %}
+        {{ form_label(form.isPublished, 'Opublikowano:') }}
         {{ form_widget(form.isPublished, {'attr': {'class': 'form-check'}}) }}
-    {% else %}
-        {{ form_widget(form.isPublished, {'attr': {'disabled': 'disabled', 'class': 'form-check'}}) }}
     {% endif %}
 
     {{ form_label(form.body, 'Treść:') }}

@@ -24,6 +24,7 @@ use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormEvent;
+use Doctrine\ORM\EntityRepository;
 
 class ArticleType extends AbstractType
 {
@@ -38,10 +39,6 @@ class ArticleType extends AbstractType
     {
         $builder
             ->add('title', TextType::class)
-            // ->add('user', EntityType::class, [
-            //     'class' => User::class,
-            //     'choice_label' => 'email',
-            // ])
             ->add('createdAt', DateType::class, [
                 'widget' => 'single_text',
                 'format' => 'dd-MM-yyyy',
@@ -54,39 +51,44 @@ class ArticleType extends AbstractType
             ->add('save', SubmitType::class);
 
         $builder
-            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
+            ->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) use ($options) {
                 $article = $event->getData();
                 $form = $event->getForm();
-                $user = $this->security->getUser();
+                // $user = $this->security->getUser();
 
-                if (!$article) {
-                    $form->add('isPublished', CheckboxType::class, [
-                        'required' => false,
-                    ]);
-                } else {
-                    $form->add('isPublished', ChoiceType::class, [
-                        'choices' => [
-                            'Tak' => true,
-                            'Nie' => false,
-                        ],
-                        'required' => false,
-                    ]);
+                if ($article && $article->getId() !== null) {
+                    if ($this->security->isGranted('ROLE_ADMIN')) {
+                        $form->add('isPublished', ChoiceType::class, [
+                            'choices' => [$options['isPublishedOptions']],
+                        ]);
+                    } else {
+                        $form->add('isPublished', ChoiceType::class, [
+                            'choices' => [$options['isPublishedOptions']],
+                            'disabled' => true,
+                            'mapped' => false,
+                        ]);
+                    }
+                } elseif ($this->security->isGranted('ROLE_ADMIN')) {
+                    $form->add('isPublished', CheckboxType::class);
                 }
 
                 if ($this->security->isGranted('ROLE_ADMIN')) {
                     $form->add('user', EntityType::class, [
                         'class' => User::class,
                         'choice_label' => 'email',
-                        'data' => $this->security->getUser(),
+                        // 'data' => $this->security->getUser(),
                     ]);
                 } else {
                     $form->add('user', EntityType::class, [
                         'class' => User::class,
-                        'required' => false,
-                        // 'data' => $this->security->getToken()->getUser(),
-                        'empty_data' => $this->security->getUser(),
+                        'query_builder' => function (EntityRepository $er) {
+                            return $er
+                                ->createQueryBuilder('user')
+                                ->where('user = :thisUser')
+                                ->setParameter('thisUser', $this->security->getUser());
+                        },
                         'choice_label' => 'email',
-                        'disabled' => true,
+                        'attr' => ['readonly' => true,],
                     ]);
                 }
             });
@@ -99,8 +101,11 @@ class ArticleType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            // 'data_class' => Article::class,
-            // 'isPublishedOptions' => null,
+            'data_class' => Article::class,
+            'isPublishedOptions' => [
+                'Tak' => true,
+                'Nie' => false,
+            ],
         ]);
     }
 }

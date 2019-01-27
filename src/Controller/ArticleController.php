@@ -171,11 +171,7 @@ class ArticleController extends AbstractController
      */
     public function changeIsPublished(Article $article): Response
     {
-        if (!$article->getIsPublished()) {
-            $article->setIsPublished(true);
-        } else {
-            $article->setIsPublished(false);
-        }
+        $article->setIsPublished(!$article->getIsPublished());
 
         try {
             $this->getDoctrine()->getManager()->flush();

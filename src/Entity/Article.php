@@ -35,16 +35,18 @@ class Article
     /**
     * @ORM\Column(type="boolean")
     */
-    private $isPublished;
+    private $isPublished = false;
 
     /**
     * @ORM\Column(type="text")
     */
     private $body;
 
+    //TODO: czy to może być nullable??
+    // * @ORM\JoinColumn(nullable=true)
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="articles")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn()
      */
     private $user;
 
