@@ -16,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
@@ -48,6 +49,11 @@ class ArticleType extends AbstractType
                 'required' => false,
                 'empty_data' => '[...nie dodano jeszcze treści artykułu...]',
             ])
+            ->add('image', FileType::class, [
+                'label' => 'Zdjęcie:',
+                'required' => false,
+                'empty_data' => 'uploads/images/default_image.jpeg', #TODO: czy będzie używać tego zdjęcia?
+            ])
             ->add('save', SubmitType::class);
 
         $builder
@@ -76,7 +82,7 @@ class ArticleType extends AbstractType
                     $form->add('user', EntityType::class, [
                         'class' => User::class,
                         'choice_label' => 'email',
-                        // 'data' => $this->security->getUser(),
+                        'data' => $this->security->getUser(),
                     ]);
                 } else {
                     $form->add('user', EntityType::class, [

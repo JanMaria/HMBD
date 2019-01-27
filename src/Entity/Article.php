@@ -50,6 +50,18 @@ class Article
      */
     private $user;
 
+    /**
+     * @ORM\Column(type="string")
+     *
+     * @Assert\File(
+     *      maxSize = "1M",
+     *      mimeTypes = "image/*",
+     *      maxSizeMessage = "Plik jest zbyt duży. Maksymalny dopuszczalny rozmiar to {{ limit }} {{ sufix }}.",
+     *      mimeTypesMessage = "Nieprawidłowy format pliku. Dopuszczalne wyłącznie pliki graficzne."
+     * )
+     */
+    private $image;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -123,6 +135,18 @@ class Article
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    public function setImage($image): self
+    {
+        $this->image = $image;
 
         return $this;
     }

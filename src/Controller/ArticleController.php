@@ -92,8 +92,17 @@ class ArticleController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $image = $form->getData()->getImage();
             try {
+                if (!is_string($image)) {
+                    $imageName = md5(uniqid()).'.'.$image->guessExtension();
+                    $image->move('uploads/images/', $imageName);
+                    $form->getData()->setImage('uploads/images/'.$imageName);
+                }
                 $handler->handleForm($form);
+            } catch (FileException $fException) {
+                $this->addFlash('fileFailure', 'Nie udało się dodać zdjęcia');
+                return $this->render('articles/edit.html.twig', ['form' => $form->createView()]);
             } catch (ORMException $exception) {
                 $this->addFlash('dbFailure', 'Nie udało się dodać artykułu');
                 return $this->render('articles/edit.html.twig', ['form' => $form->createView()]);
