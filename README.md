@@ -52,7 +52,7 @@ Proszę utworzyć po jednym użytkowniku dla każdej z ról z hasłem **demo1234
 - Możliwość pobrania artykuł na dysk w formie PDF. Czyli powinien znaleźć się przycisk "Pobierz artykuł". Do utworzenia PDF będzisz potrzebował zewnętrznej paczki.
 
 ## Ad. Tworzenie artykułu & Ad. Edycja artykułu
-- Trzeba dodać pole do encji Article, które będzie przechowywać informacje o zdjęciu, zaś w formularzu powinno znaleźć się pole do dodania zdjęcia, aby użytkownik mógł wybrać je z dysku i przypisać do tego artykułu.
+- `[x]` Trzeba dodać pole do encji Article, które będzie przechowywać informacje o zdjęciu, zaś w formularzu powinno znaleźć się pole do dodania zdjęcia, aby użytkownik mógł wybrać je z dysku i przypisać do tego artykułu.
 - Artykuły powinny mieć tagi (jeden artykuł może mieć wiele tagów). W encji będzie to pole typu array, zaś w formularzu będziesz wyświetlał tagi jako string, gdzie tagi są oddzielone przecinkami (użyj pola typu TextareaType).
 - `[x]` pole isPublished powinno być dodane do formularza tylko dla adminów. Musisz zastanowić się jak dodać nowe pole do formularza w zależności od okoliczności. Żebyś nie zrobił tak, że to pole będzie zawsze, a w szablonie sobie je ukryjesz - tak jest niepoprawnie.
 - `[x]` Pole "Autor" nie powinno wyświetlać się dla użytkowników z rolą zwykłego użytkownika. W tym przypadku autorem jest on sam, więc musisz sam to ustawić w kodzie. W przypadku adminów to pole będzie wyświetlane. Admin będzie miał możliwość ustawienia autora artykułu. Tak więc, kiedy admin tworzy/edytuje artykuł to powinno być pole typu EntityType, aby admin mógł wybrać autora. 
