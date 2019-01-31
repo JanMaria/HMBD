@@ -27,7 +27,7 @@ class ArticleRepository extends ServiceEntityRepository
 
     private function buildSecurityPart(QueryBuilder $qb)//: QueryBuilder
     {
-        if (!$this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
+        if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             $qb->andWhere('a.isPublished = 1');
         } elseif (!$this->security->isGranted('ROLE_ADMIN')) {
             $qb

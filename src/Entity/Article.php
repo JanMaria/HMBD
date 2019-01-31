@@ -51,7 +51,7 @@ class Article
     private $user;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      *
      * @Assert\File(
      *      maxSize = "1M",
@@ -61,6 +61,11 @@ class Article
      * )
      */
     private $image;
+
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    private $tags;
 
     public function getId(): ?int
     {
@@ -147,6 +152,18 @@ class Article
     public function setImage($image): self
     {
         $this->image = $image;
+
+        return $this;
+    }
+
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    public function setTags(array $tags): self
+    {
+        $this->tags = $tags;
 
         return $this;
     }

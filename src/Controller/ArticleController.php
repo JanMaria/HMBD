@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\File\File;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Doctrine\ORM\ORMException;
@@ -38,20 +39,8 @@ class ArticleController extends AbstractController
         }
         dump($metadata);
 
-        // $currentPage = ($request->query->get('currentPage') === null) ? 1 : $request->query->get('currentPage');
         $metadata['perPage'] = ($request->query->get('perPage') === null) ? 10 : $request->query->get('perPage');
-        // $perPage = ($request->query->get('perPage') === null) ? 10 : $request->query->get('perPage');
-
-        // $form = $this->createForm(FiltersType::class);
-        // $form->handleRequest($request);
-        //
-        // if ($form->isSubmitted() && $form->isValid()) {
-        //     $filters = $form->getData();
-        // }
-
-            // $perPage = ($request->query->get('perPage')) ? $request->query->get('perPage') : $perPage;
         $articles = $articleRepository->getSubpage($metadata, $currentPage, $metadata['perPage']);
-            // $subpages = \ceil($articles->count() / $perPage);
 
         return $this->render('articles/index.html.twig', [
             // 'form' => $form->createView(),
@@ -92,13 +81,13 @@ class ArticleController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $image = $form->getData()->getImage();
+            // $image = $form->getData()->getImage();
             try {
-                if (!is_string($image)) {
-                    $imageName = md5(uniqid()).'.'.$image->guessExtension();
-                    $image->move('uploads/images/', $imageName);
-                    $form->getData()->setImage('uploads/images/'.$imageName);
-                }
+                // if (!is_string($image)) {
+                //     // $imageName = md5(uniqid()).'.'.$image->guessExtension();
+                //     // $image->move('uploads/images/', $imageName);
+                //     // $form->getData()->setImage('uploads/images/'.$imageName);
+                // }
                 $handler->handleForm($form);
             } catch (FileException $fException) {
                 $this->addFlash('fileFailure', 'Nie udało się dodać zdjęcia');
@@ -121,19 +110,15 @@ class ArticleController extends AbstractController
      */
     public function edit(Request $request, Article $article): Response
     {
+        //$article->setImage(new File($article->getImage()));
         $form = $this->createForm(ArticleType::class, $article);
-
-        // , [
-        //   'isPublishedOptions' => [
-        //     'tak' => true,
-        //     'nie' => false,
-        //   ]
-        // ]
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
+                // dd($article->getImage());
+                // dd($form->get('image'));
+                // if ($form->get('image')) {}
                 $this->getDoctrine()->getManager()->flush();
             } catch (ORMException $exception) {
                 $this->addFlash('dbFailure', 'Nie udało się zedytować artykułu');
@@ -143,7 +128,15 @@ class ArticleController extends AbstractController
 
             return $this->redirectToRoute('article_list');
         }
-        return $this->render('articles/edit.html.twig', ['form' => $form->createView()]);
+        return $this->render(
+            'articles/edit.html.twig',
+            [
+                'form' => $form->createView(),
+                'img' => $form->getData()->getImage(),
+                // 'img' => ($form->getData()->getImage() === null) ?
+                //     'uploads/images/default_image.jpeg' : $form->getData()->getImage(),
+            ]
+        );
     }
 
     /**
