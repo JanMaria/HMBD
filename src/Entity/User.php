@@ -23,6 +23,16 @@ class User implements UserInterface
     private $id;
 
     /**
+    * @ORM\Column(nullable=true)
+    */
+    private $name;
+
+    /**
+    * @ORM\Column(nullable=true)
+    */
+    private $surname;
+
+    /**
      * @ORM\Column(unique=true)
      * @Assert\Email(
      *    message = "'{{ value }}' nie jest poprawnym adresem e-mail"
@@ -70,6 +80,30 @@ class User implements UserInterface
         return $this->id;
     }
 
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name = null): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getSurname(): ?string
+    {
+        return $this->surname;
+    }
+
+    public function setSurname(string $surname = null): self
+    {
+        $this->surname = $surname;
+
+        return $this;
+    }
+
     public function getEmail(): ?string
     {
         return $this->email;
@@ -98,8 +132,9 @@ class User implements UserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
-        // guarantee every user at least has ROLE_USER
-        $roles[] = 'ROLE_USER';
+        if (empty($roles)) {
+            $roles[] = 'ROLE_USER';
+        }
 
         return array_unique($roles);
     }

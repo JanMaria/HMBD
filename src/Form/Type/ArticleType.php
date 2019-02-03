@@ -90,7 +90,14 @@ class ArticleType extends AbstractType
                 if ($this->security->isGranted('ROLE_ADMIN')) {
                     $form->add('user', EntityType::class, [
                         'class' => User::class,
-                        'choice_label' => 'email',
+                        'choice_label' => function ($user) {
+                            $basicLabel = $user->getName().' '.$user->getSurname().' ('.$user->getEmail().')';
+                            $fullLabel =
+                                (in_array('ROLE_ADMIN', $user->getRoles()) ||
+                                in_array('ROLE_SUPER_ADMIN', $user->getRoles())) ?
+                                    $basicLabel.' '.implode($user->getRoles(), ' ') : $basicLabel;
+                            return $fullLabel;
+                        },
                         'data' => $this->security->getUser(),
                     ]);
                 } else {
