@@ -1,3 +1,19 @@
+# Materiały
+## Standardy pisania kodu:
+  https://www.php-fig.org/psr/psr-1/  
+  https://www.php-fig.org/psr/psr-2/  
+  https://symfony.com/doc/current/contributing/code/standards.html  
+  https://twig.symfony.com/doc/2.x/coding_standards.html  
+
+## Dokumentacja:
+  http://php.net/manual/en/index.php  
+  https://symfony.com/doc/current/index.html  
+  https://twig.symfony.com/doc/2.x/  
+  https://swiftmailer.symfony.com/docs  
+  https://www.doctrine-project.org/projects/doctrine-orm/en/2.6/index.html  
+  https://packagist.org/  
+  https://getbootstrap.com/docs/4.2  
+
 # OGÓLNE INFORMACJE
 1. Do stylowania szablonów używamy bootstrapa w wersji czwartej.
 2. Wszystkie formularze walidujemy po stronie serwera. Walidację HTML wyłączamy w każdym formularzu.
