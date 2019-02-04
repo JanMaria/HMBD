@@ -25,18 +25,17 @@ class UserRepository extends ServiceEntityRepository
 // (czegoś łączącego TextType i ChoiceType)
     public function findByPartialEmail($partialEmail)
     {
-      $users = $this->createQueryBuilder('user')
+        $users = $this->createQueryBuilder('user')
         ->where('user.email LIKE :partialEmail')
         ->setParameter('partialEmail', '%'.$partialEmail.'%')
         ->getQuery()
         ->getResult();
 
-      $assocUsers = array();
-      foreach ($users as $user) {
-        $assocUsers[$user->getEmail()] = $user;
-      }
+        $assocUsers = array();
+        foreach ($users as $user) {
+            $assocUsers[$user->getEmail()] = $user;
+        }
 
-      return $assocUsers;
+        return $assocUsers;
     }
-
 }

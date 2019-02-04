@@ -3,33 +3,40 @@
 {% block title %}Edit Article{% endblock %}
 
 {% block body %}
+  {{ parent() }}
   {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
     {{ form_label(form.title, 'Tytuł:') }}
     {{ form_widget(form.title, {'attr': {'class': 'form-control'}}) }}
     {{ form_errors(form.title) }}
 
-    {{ form_label(form.authorEmail, 'Email autora:') }}
-    {{ form_widget(form.authorEmail, {'attr': {'class': 'form-control'}}) }}
-    {{ form_errors(form.authorEmail) }}
+    {{ form_label(form.user, 'Autor:') }}
+    {{ form_widget(form.user, {'attr': {'class': 'form-control'}}) }}
 
     {{ form_label(form.createdAt, 'Data utworzenia (dd-mm-rrrr):') }}
     {{ form_widget(form.createdAt, {'attr': {'class': 'form-control'}})}}
     {{ form_errors(form.createdAt) }}
 
     {{ form_label(form.isPublished, 'Opublikowano:') }}
-    {{ form_widget(form.isPublished, {'attr': {'class': 'form-check'}}) }}
+    {% if is_granted("ROLE_ADMIN") %}
+        {{ form_widget(form.isPublished, {'attr': {'class': 'form-check'}}) }}
+    {% else %}
+        {{ form_widget(form.isPublished, {'attr': {'disabled': 'disabled', 'class': 'form-check'}}) }}
+    {% endif %}
 
     {{ form_label(form.body, 'Treść:') }}
     {{ form_widget(form.body, {'attr': {
       'class': 'form-control',
       'rows': 5,
     }}) }}
-    {{ form_errors(form.body) }}
-
+  <div>
     {{ form_widget(form.save, {
       'attr': {'class': 'btn btn-primary'},
       'label': 'Zapisz zmiany'
       })
     }}
   {{ form_end(form) }}
+
+
+    <a href={{ path('article_list') }} class="btn btn-link" style="float: right;">Anuluj</a>
+  </div>
 {% endblock %}
