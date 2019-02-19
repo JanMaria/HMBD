@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use App\Form\RegistrationFormType;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Core\Security;
+// use Symfony\Component\Security\Core\Security;
 use App\FormHandler\FormHandler;
 
 class RegistrationController extends AbstractController
@@ -22,10 +22,11 @@ class RegistrationController extends AbstractController
     public function register(
         Request $request,
         UserPasswordEncoderInterface $passwordEncoder,
-        Security $security,
+        // Security $security,
         FormHandler $handler
     ) {
-        if ($security->isGranted('ROLE_USER')) {
+        if ($this->isGranted('ROLE_USER')) {
+        // if ($security->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('article_list');
         }
 
@@ -37,9 +38,6 @@ class RegistrationController extends AbstractController
             $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
             $user->setPassword($password);
 
-            // $entityManager = $this->getDoctrine()->getManager();
-            // $entityManager->persist($user);
-            // $entityManager->flush();
             try {
                 $handler->handleForm($form);
             } catch (ORMException $exception) {

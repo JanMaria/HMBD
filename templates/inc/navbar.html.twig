@@ -16,9 +16,9 @@
                 </li>
                 {% endif %}
                 <li class="search-form">
-                    <form id="filters" name="filters" action="{{ path('article_list', {'searchQuery': 'bla'}) }}" class="form-inline">
-                        <input type="text" id="searchQuery" name="searchQuery" placeholder="Szukaj..." class="form-control">
-                        <!-- <input type="text" id="qry" name="qry" placeholder="Szukaj..." class="form-control"> -->
+                    <form id="filters" name="filters" action="{{ path('article_list') }}" class="form-inline">
+                        <input type="text" id="searchQuery" name="searchQuery" placeholder="Szukaj..."
+                            value="{{ app.request.get('searchQuery') }}" class="form-control">
                         <input type="submit" value="Szukaj" class="btn btn-primary">
                     </form>
                 </li>
@@ -39,9 +39,3 @@
         </div>
     </div>
 </nav>
-
-<script>
-    function passQuery(){
-        $('query')
-    }
-</script>

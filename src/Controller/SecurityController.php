@@ -11,14 +11,15 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 class SecurityController extends AbstractController
 {
-    // TODO: nie wiem, czy lepiej wyrzucić HttpException 403 jak tu, czy przekierować,
-    //  jak przy próbie rejestracji zalogowanego użytkownika
+    // * @Security("not is_granted('ROLE_USER')")
     /**
      * @Route("/login", name="app_login")
-     * @Security("not is_granted('ROLE_USER')", statusCode=403)
      */
     public function login(AuthenticationUtils $authenticationUtils): Response
     {
+        if ($this->isGranted('IS_AUTHENTICATED_FULLY')) {
+            return $this->redirectToRoute('article_list');
+        }
         // get the login error if there is one
         $error = $authenticationUtils->getLastAuthenticationError();
         // last username entered by the user

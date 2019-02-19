@@ -25,54 +25,52 @@ use Doctrine\ORM\Exception\NotSupported;
 class ArticleController extends AbstractController
 {
     /**
-     * @Route("/{currentPage<\d+>}", defaults={"currentPage"=1}, name="article_list")
+     * @Route("/", name="article_list")
      */
-    public function index(Request $request, ArticleRepository $articleRepository, $currentPage): Response
+    public function index(Request $request, ArticleRepository $articleRepository): Response
     {
+        $options = [];
         $metadata = [];
         if ($request->getQueryString() !== null) {
-            $tempMetadata = explode('&', $request->getQueryString());
+            $tempMetadata = explode('&', urldecode($request->getQueryString()));
             foreach ($tempMetadata as $data) {
                 $data = explode('=', $data);
                 $metadata[$data[0]] = $data[1];
             }
         }
+
+        if (!array_key_exists('currentPage', $metadata)) {
+            $metadata['currentPage'] = "1";
+        }
+        if (!array_key_exists('sort', $metadata)) {
+            $metadata['sort'] = "";
+        }
+        if (!array_key_exists('perPage', $metadata)) {
+            $metadata['perPage'] = 10;
+        }
+
+        $options['sortOptions'] = [
+            'title-asc' => 'Tytuł - rosnąco',
+            'title-desc' => 'Tytuł - malejąco',
+            'createdAt-asc' => 'Data utworzenia - rosnąco',
+            'createdAt-desc' => 'Data utworzenia - malejąco',
+        ];
+        $options['perPageOptions'] = [5, 10, 15, 20, 25, 30];
+
         dump($metadata);
 
-        $metadata['perPage'] = ($request->query->get('perPage') === null) ? 10 : $request->query->get('perPage');
-        $articles = $articleRepository->getSubpage($metadata, $currentPage, $metadata['perPage']);
+        $articles = $articleRepository->getSubpage($metadata);
 
         return $this->render('articles/index.html.twig', [
-            // 'form' => $form->createView(),
             'articles' => $articles,
-            // 'subpages' => $subpages,
-            'currentPage' => $currentPage,
-            // 'perPage' => $perPage,
             'metadata' => $metadata,
+            'options' => $options,
         ]);
     }
 
-    // /**
-    //  * @Route("/search", name="article_search")
-    //  */
-    // public function search(Request $request): Response
-    // {
-    //     $query = $request->query->get('query');
-    //     $articles = null;
-    //     try {
-    //         throw new \Exception('sth');
-    //         $articles = $this->getDoctrine()->getRepository(Article::class)->findByPartialTitle($query);
-    //     // } catch (ORMException $exception) {
-    //     } catch (\Exception $exception) {
-    //         $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
-    //     }
-    //
-    //     return $this->render('articles/index.html.twig', ['articles' => $articles]);
-    // }
-
     /**
      * @Route("/article/new", name="new_article")
-     * @Security("is_granted('ROLE_USER')", statusCode=403)
+     * @Security("is_granted('ROLE_USER')")
      */
     public function new(Request $request, FormHandler $handler): Response
     {
@@ -81,13 +79,7 @@ class ArticleController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // $image = $form->getData()->getImage();
             try {
-                // if (!is_string($image)) {
-                //     // $imageName = md5(uniqid()).'.'.$image->guessExtension();
-                //     // $image->move('uploads/images/', $imageName);
-                //     // $form->getData()->setImage('uploads/images/'.$imageName);
-                // }
                 $handler->handleForm($form);
             } catch (FileException $fException) {
                 $this->addFlash('fileFailure', 'Nie udało się dodać zdjęcia');
@@ -104,21 +96,18 @@ class ArticleController extends AbstractController
         return $this->render('articles/edit.html.twig', ['form' => $form->createView()]);
     }
 
+    // * @Security("is_granted('ROLE_ADMIN') or (token !== null and user.hasArticle(id))")
     /**
      * @Route("/article/edit/{id}", name="edit_article")
-     * @Security("is_granted('ROLE_ADMIN') or user.hasArticle(id)", statusCode=403)
+     * @Security("is_granted('ROLE_ADMIN') or (is_granted('IS_AUTHENTICATED_FULLY') and user.hasArticle(id))")
      */
     public function edit(Request $request, Article $article): Response
     {
-        //$article->setImage(new File($article->getImage()));
         $form = $this->createForm(ArticleType::class, $article);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                // dd($article->getImage());
-                // dd($form->get('image'));
-                // if ($form->get('image')) {}
                 $this->getDoctrine()->getManager()->flush();
             } catch (ORMException $exception) {
                 $this->addFlash('dbFailure', 'Nie udało się zedytować artykułu');
@@ -133,8 +122,6 @@ class ArticleController extends AbstractController
             [
                 'form' => $form->createView(),
                 'img' => $form->getData()->getImage(),
-                // 'img' => ($form->getData()->getImage() === null) ?
-                //     'uploads/images/default_image.jpeg' : $form->getData()->getImage(),
             ]
         );
     }
@@ -149,7 +136,7 @@ class ArticleController extends AbstractController
 
     /**
      * @Route("/article/delete", name="delete_article")
-     * @Security("is_granted('ROLE_ADMIN') or user.hasArticle(request.get('article_id'))", statusCode=403)
+     * @Security("is_granted('ROLE_ADMIN') or (is_granted('IS_AUTHENTICATED_FULLY') and user.hasArticle(request.get('article_id')))")
      */
     public function delete(Request $request): Response
     {
