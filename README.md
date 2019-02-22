@@ -84,7 +84,7 @@ Proszę utworzyć po jednym użytkowniku dla każdej z ról z hasłem **demo1234
 
 ## Ad. Strona logowania
 - `[x]` Formularz logowania zrób w tradycyjnym HTML, bez wykorzystania Form Component.
-- Funkcjonalność **Zapamiętaj mnie**. Ustaw czas na 1 tydzień.
+- `[x]` Funkcjonalność **Zapamiętaj mnie**. Ustaw czas na 1 tydzień.
 - `[x]` Do strony logowania nie powinien mieć dostępu już zalogowany użytkownik.
 
 ## Ad. Konto użytkownika
