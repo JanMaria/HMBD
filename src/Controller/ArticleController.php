@@ -96,7 +96,6 @@ class ArticleController extends AbstractController
         return $this->render('articles/edit.html.twig', ['form' => $form->createView()]);
     }
 
-    // * @Security("is_granted('ROLE_ADMIN') or (token !== null and user.hasArticle(id))")
     /**
      * @Route("/article/edit/{id}", name="edit_article")
      * @Security("is_granted('ROLE_ADMIN') or (is_granted('IS_AUTHENTICATED_FULLY') and user.hasArticle(id))")

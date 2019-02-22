@@ -69,11 +69,6 @@ class Article
      */
     private $tags;
 
-    // public function __construct(Security $security)
-    // {
-    //     $this->security = $security;
-    // }
-
     public function getId(): ?int
     {
         return $this->id;
@@ -103,12 +98,6 @@ class Article
     {
         $this->createdAt = new \DateTime('now');
     }
-    // public function setCreatedAt(\DateTime $createdAt): self
-    // {
-    //     $this->createdAt = $createdAt;
-    //
-    //     return $this;
-    // }
 
     public function getIsPublished(): ?bool
     {
@@ -145,16 +134,6 @@ class Article
 
         return $this;
     }
-
-    // /**
-    //  * @ORM\PrePersist
-    //  */
-    // public function preSetUser()
-    // {
-    //     if (null === $this->user) {
-    //         $this->user = $this->security->getUser();
-    //     }
-    // }
 
     public function getImage()
     {
