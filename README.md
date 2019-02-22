@@ -75,9 +75,9 @@ Proszę utworzyć po jednym użytkowniku dla każdej z ról z hasłem **demo1234
     - Dodatkowo zrób tak, że label będzie w takiej formie: "Imię Nazwisko (email) <tutaj_rola>", gdzie <tutaj_rola> będzie na czerwono i pokazana tylko wtedy, gdy rola to Admin lub wyżej. Chcemy rozróżniać czy użytkownik, do którego przypisują artykuł jest adminem.
 
 ## Ad. Strona rejestracji
-- Captcha w formularzy rejestracji.
-- Checkbox "Akceptuję regulamin strony". Musi być zaznaczony, aby przejść walidację.
-- Formularz rejestracji powinien być zbindowany do encji User, ale nie dodajemy captych'y i zgody do encji użytkownika.
+- `[x]` Captcha w formularzy rejestracji.
+- `[x]` Checkbox "Akceptuję regulamin strony". Musi być zaznaczony, aby przejść walidację.
+- `[x]` Formularz rejestracji powinien być zbindowany do encji User, ale nie dodajemy captych'y i zgody do encji użytkownika.
 - `[x]` Po poprawnym zarejestrowaniu od razu zalogowanie.
 - `[x]` Do strony rejestracji nie powinien mieć dostępu już zalogowany użytkownik.
 
