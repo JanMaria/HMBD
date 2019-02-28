@@ -6,12 +6,16 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Security\Core\Security;
 
 /**
 * @ORM\Entity(repositoryClass="App\Repository\ArticleRepository")
+* @ORM\HasLifecycleCallbacks
 */
 class Article
 {
+    private $security;
+
     /**
     * @ORM\Id()
     * @ORM\GeneratedValue()
@@ -35,7 +39,7 @@ class Article
     /**
     * @ORM\Column(type="boolean")
     */
-    private $isPublished;
+    private $isPublished = false;
 
     /**
     * @ORM\Column(type="text")
@@ -44,9 +48,31 @@ class Article
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="articles")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\JoinColumn()
      */
     private $user;
+
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     *
+     * @Assert\File(
+     *      maxSize = "1M",
+     *      mimeTypes = "image/*",
+     *      maxSizeMessage = "Plik jest zbyt duży. Maksymalny dopuszczalny rozmiar to {{ limit }} {{ sufix }}.",
+     *      mimeTypesMessage = "Nieprawidłowy format pliku. Dopuszczalne wyłącznie pliki graficzne."
+     * )
+     */
+    private $image;
+
+    /**
+     * @ORM\Column(type="array", nullable=true)
+     */
+    private $tags;
+
+    // public function __construct(Security $security)
+    // {
+    //     $this->security = $security;
+    // }
 
     public function getId(): ?int
     {
@@ -65,29 +91,24 @@ class Article
         return $this;
     }
 
-    public function getAuthorEmail(): ?string
-    {
-        return $this->authorEmail;
-    }
-
-    public function setAuthorEmail(string $authorEmail): self
-    {
-        $this->authorEmail = $authorEmail;
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): self
+    /**
+     * @ORM\PrePersist
+     */
+    public function setTimestamp()
     {
-        $this->createdAt = $createdAt;
-
-        return $this;
+        $this->createdAt = new \DateTime('now');
     }
+    // public function setCreatedAt(\DateTime $createdAt): self
+    // {
+    //     $this->createdAt = $createdAt;
+    //
+    //     return $this;
+    // }
 
     public function getIsPublished(): ?bool
     {
@@ -121,6 +142,40 @@ class Article
     public function setUser(?User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    // /**
+    //  * @ORM\PrePersist
+    //  */
+    // public function preSetUser()
+    // {
+    //     if (null === $this->user) {
+    //         $this->user = $this->security->getUser();
+    //     }
+    // }
+
+    public function getImage()
+    {
+        return $this->image;
+    }
+
+    public function setImage($image): self
+    {
+        $this->image = $image;
+
+        return $this;
+    }
+
+    public function getTags()
+    {
+        return $this->tags;
+    }
+
+    public function setTags(array $tags): self
+    {
+        $this->tags = $tags;
 
         return $this;
     }

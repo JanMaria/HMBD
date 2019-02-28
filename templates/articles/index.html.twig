@@ -28,17 +28,13 @@
       </div>
     </div>
 
-    <!-- TODO: to tylko na potrzeby debugowania -->
-    <!-- <textarea id="myConsole" cols="50" rows="10"></textarea> -->
-
-    <!-- <form action={{ path('article_list') }} id="filters"> -->
         <div class="d-flex flex-row mb-3">
             <div class="p-2">
-            <input form="filters" type="date" id="dateFrom" name="dateFrom" class="form-control">
+            <input form="filters" type="date" id="dateFrom" name="dateFrom" value="{{ app.request.get('dateFrom') }}" class="form-control">
         </div>
 
             <div class="p-2">
-            <input form="filters" type="date" id="dateTo" name="dateTo" class="form-control">
+            <input form="filters" type="date" id="dateTo" name="dateTo" value="{{ app.request.get('dateTo') }}" class="form-control">
         </div>
             <div class="p-2">
             <input form="filters" type="submit" value="Filtruj" class="btn btn-outline-success">
@@ -46,14 +42,24 @@
         <div class="ml-auto p-2">
             <select form="filters" id="sort" name="sort" class="form-control m-2" onchange="this.form.submit();">
                 <option value="" selected disabled hidden><p class="text-muted">Sortuj wyniki...<p></option>
-                <option value="a.title-ASC">Nazwa - rosnąco</option>
+                {% for method, name in options['sortOptions'] %}
+                    {% if method == metadata['sort'] %}
+                        <option value="{{ method }}" selected>{{ name }}</option>
+                    {% else %}
+                        <option value="{{ method }}">{{ name }}</option>
+                    {% endif %}
+                {% endfor %}
+                <!-- <option value="a.title-ASC">Nazwa - rosnąco</option>
                 <option value="a.title-DESC">Nazwa - malejąco</option>
                 <option value="a.createdAt-ASC">Data utworzenia - rosnąco</option>
-                <option value="a.createdAt-DESC">Data utworzenia - malejąco</option>
+                <option value="a.createdAt-DESC">Data utworzenia - malejąco</option> -->
             </select>
         </div>
-        </div>
-    <!-- </form> -->
+    </div>
+
+    <div class="d-flex justify-content-center my-3">
+        {{ '[ Wyświetlane ' ~ articles.getIterator.count ~ ' z ' ~ articles.count ~ ' ]' }}
+    </div>
 
     {% if articles.count > 0 %}
         <table id="articles" class="table table-striped">
@@ -78,10 +84,10 @@
                         {% if is_granted('ROLE_ADMIN') %}
                             <td>
                                 {% if article.isPublished %}
-                                    <a href={{ path('de_publish_article', { 'id': article.id }) }}
+                                    <a href={{ path('de_publish_article', {'id': article.id}) }}
                                     class="btn btn-outline-danger btn-sm">Depublikuj</a>
                                 {% else %}
-                                    <a href={{ path('de_publish_article', { 'id': article.id }) }}
+                                    <a href={{ path('de_publish_article', {'id': article.id}) }}
                                     class="btn btn-outline-success btn-sm">Opublikuj</a>
                                 {% endif %}
                             </td>
@@ -92,14 +98,14 @@
                             {% endif %}
                         <td>{{ article.body|truncate(100, true, '(...)')|wordwrap(30)|nl2br }}</td>
                         <td class="d-flex justify-content-center">
-                            <a href={{ path('article_show', { 'id': article.id }) }}
+                            <a href={{ path('article_show', {'id': article.id}) }}
                                 class="btn btn-outline-primary btn-sm">Pokaż</a>
 
                             {% if is_granted('ROLE_ADMIN') or app.user is same as(article.user)  %}
-                                <a href={{ path('edit_article', { 'id': article.id }) }}
+                                <a href={{ path('edit_article', {'id': article.id}) }}
                                     class="btn btn-outline-dark btn-sm">Edytuj</a>
                                 <button class="btn btn-outline-danger btn-sm" data-toggle="modal"
-                                    data-target="#articleDeleteModal" data-articleid={{ article.id }}>Usuń
+                                    data-target="#articleDeleteModal" data-articleid="{{ article.id }}">Usuń
                                 </button>
                             {% endif %}
                         </td>
@@ -115,39 +121,46 @@
         <div class="p-2"><p>Ilość artykułów na stronie: </p></div>
         <div class="p-2">
             <select name="perPage" id="perPage" form="filters" onchange="this.form.submit()" class="form-control">
-                <option value="5">5</option>
+                {% for number in options['perPageOptions'] %}
+                    {% if number == metadata['perPage'] %}
+                        <option value="{{ number }}" selected>{{ number }}</option>
+                    {% else %}
+                        <option value="{{ number }}">{{ number }}</option>
+                    {% endif %}
+                {% endfor %}
+                <!-- <option value="5">5</option>
                 <option value="10">10</option>
                 <option value="15">15</option>
                 <option value="20">20</option>
                 <option value="25">25</option>
-                <option value="30">30</option>
+                <option value="30">30</option> -->
             </select>
         </div>
     </div>
 
     <div class="d-flex justify-content-center">
-        <form action="{{ path('article_list') }}">
+        <!-- <form action="{{ path('article_list') }}" id="currP" name="currP"> -->
             {% if articles.count > 0 %}
                 <nav>
                     <ul class="pagination">
-                        {% if currentPage != 1 %}
+                        {% if metadata['currentPage'] != 1 %}
                             <li class="page-item m-2">
-                                <a href="{{ path('article_list', {'currentPage': 1}|merge(metadata)) }}"
+                                <a href="{{ path('article_list', metadata|merge({'currentPage': 1})) }}"
                                     class="page-link">Pierwsza
                                 </a>
                             </li>
                         {% endif %}
-                        {% for i in 1..(articles.count/metadata['perPage'])|round(0, 'ceil') %}
+                        {% for i in 1..(articles.count / metadata['perPage'])|round(0, 'ceil') %}
                             <li class="page-item m-2">
-                                <a href="{{ path('article_list', {'currentPage': i}|merge(metadata)) }}"
+                                <a href="{{ path('article_list', metadata|merge({'currentPage': i})) }}"
                                     class="page-link">{{ i }}
                                 </a>
                             </li>
                         {% endfor %}
-                        {% if currentPage != (articles.count/metadata['perPage'])|round(0, 'ceil') %}
+                        {% if metadata['currentPage'] != (articles.count / metadata['perPage'])|round(0, 'ceil') %}
                             <li class="page-item m-2">
                                 <a href="{{ path('article_list',
-                                    {'currentPage': (articles.count/metadata['perPage'])|round(0, 'ceil')}|merge(metadata)) }}"
+                                    metadata|merge({'currentPage': (articles.count / metadata['perPage'])|round(0, 'ceil')})) }}"
                                     class="page-link">Ostatnia
                                 </a>
                             </li>
@@ -155,23 +168,23 @@
                     </ul>
                 </nav>
             {% endif %}
-        </form>
+        <!-- </form> -->
     </div>
 
 {% endblock %}
 
 {% block javascripts %}
     <script>
-        $('#articleDeleteModal').on('show.bs.modal', function(event){
-            var button = $(event.relatedTarget);
-            var article_id = button.data('articleid');
-            var mdl = $(this);
+        // $('#articleDeleteModal').on('show.bs.modal', function(event){
+        //     var button = $(event.relatedTarget);
+        //     var article_id = button.data('articleid');
+        //     var mdl = $(this);
+        //
+        //     mdl.find('.modal-body #artcl_id').val(article_id);
+        // });
 
-            mdl.find('.modal-body #artcl_id').val(article_id);
-        });
-
-        $.each({{ metadata|json_encode|raw }}, function(index, value) {
-            document.getElementById(index).value = value;
-        });
+        // $.each({{ metadata|json_encode|raw }}, function(index, value) {
+        //     document.getElementById(index).value = value;
+        // });
     </script>
 {% endblock %}

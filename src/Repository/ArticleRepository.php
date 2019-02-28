@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Security\Core\Security;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\ORM\Tools\Pagination\Paginator;
+use Zend\EventManager\Exception\InvalidArgumentException;
 
 /**
  * @method Article|null find($id, $lockMode = null, $lockVersion = null)
@@ -25,61 +26,56 @@ class ArticleRepository extends ServiceEntityRepository
         $this->security = $security;
     }
 
-    private function buildSecurityPart(QueryBuilder $qb)//: QueryBuilder
+    public function getSubpage(array $filters): Paginator
     {
-        if (!$this->security->isGranted('IS_AUTHENTICATED_FULLY')) {
+        $query = $this->buildQuery($filters);
+        $paginator = $this->paginate($query, $filters['currentPage'], $filters['perPage']);
+
+        return $paginator;
+    }
+    //
+    // public function getSubpage(array $filters, $currentPage, $perPage): Paginator
+    // {
+    //     $currentPage = ($currentPage === null) ? 1: $currentPage;
+    //     $perPage = ($perPage === null) ? 1: $perPage;
+    //     $query = $this->buildQuery($filters);
+    //     $paginator = $this->paginate($query, $currentPage, $perPage);
+    //
+    //     return $paginator;
+    // }
+
+    private function buildSecurityPart(QueryBuilder $qb)
+    {
+        if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             $qb->andWhere('a.isPublished = 1');
         } elseif (!$this->security->isGranted('ROLE_ADMIN')) {
             $qb
                 ->andWhere('a.user = :thisUser OR a.isPublished = 1')
                 ->setParameter('thisUser', $this->security->getUser());
         }
-
-        // return $qb;
     }
 
-    private function buildDateRangePart(array $filters, QueryBuilder $qb)//: QueryBuilder
+    private function buildDateRangePart(array $filters, QueryBuilder $qb)
     {
-        if (\array_key_exists('dateFrom', $filters) && $filters['dateFrom'] !== "") {
+        if (array_key_exists('dateFrom', $filters) && $filters['dateFrom'] !== "") {
             $qb
             ->andWhere($qb->expr()->gte('a.createdAt', str_replace("-", "", $filters['dateFrom'])));
         }
 
-        if (\array_key_exists('dateTo', $filters) && $filters['dateTo'] !== "") {
+        if (array_key_exists('dateTo', $filters) && $filters['dateTo'] !== "") {
             $qb
             ->andWhere($qb->expr()->lt('a.createdAt', str_replace("-", "", $filters['dateTo'])));
         }
-
-        // return $qb;
     }
-
-    // private function buildSearchPart(array $filters, QueryBuilder $qb): QueryBuilder
-    // {
-    //     $qb
-    //         ->andWhere('a.title LIKE :partialTitle')
-    //         ->setParameter('partialTitle', '%'.$filters['partialTitle'].'%');
-    //
-    //     return $qb;
-    // }
-
 
     private function buildTitleSearchPart(array $filters, QueryBuilder $qb)
     {
-        if (\array_key_exists('searchQuery', $filters) && $filters['searchQuery'] !== "") {
+        if (array_key_exists('searchQuery', $filters) && $filters['searchQuery'] !== "") {
             $qb
                 ->andWhere('a.title LIKE :partialTitle')
                 ->setParameter('partialTitle', '%'.$filters['searchQuery'].'%');
         }
     }
-
-    // public function findByPartialTitle($partialTitle)
-    // {
-    //     return $this->createQueryBuilder('a')
-    //     ->where('a.title LIKE :partialTitle')
-    //     ->setParameter('partialTitle', '%'.$partialTitle.'%')
-    //     ->getQuery()
-    //     ->getResult();
-    // }
 
     private function buildQuery(array $filters)
     {
@@ -89,41 +85,20 @@ class ArticleRepository extends ServiceEntityRepository
         $this->buildDateRangePart($filters, $qb);
         $this->buildTitleSearchPart($filters, $qb);
 
-        // if (\array_key_exists('dateFrom', $filters) && $filters['dateFrom'] !== "") {
-        //     // dd('date from: '.$filters['dateFrom']);
-        //     // ->format('Ymd')
-        //     $qb
-        //     ->andWhere($qb->expr()->gte('a.createdAt', str_replace("-", "", $filters['dateFrom'])));
-        //         // ->andWhere('a.createdAt >= :from_date_filter')
-        //         // ->setParameter('from_date_filter', $filters['from_date_filter']);
-        // }
-        //
-        // if (\array_key_exists('dateTo', $filters) && $filters['dateTo'] !== "") {
-        //     $qb
-        //     ->andWhere($qb->expr()->lt('a.createdAt', str_replace("-", "", $filters['dateTo'])));
-        //         // ->andWhere('a.createdAt >= :from_date_filter')
-        //         // ->setParameter('from_date_filter', $filters['from_date_filter']);
-        // }
-
-        if (\array_key_exists('sort', $filters) && $filters['sort'] !== null) {
+        if ($filters['sort'] !== "") {
+        // if (array_key_exists('sort', $filters) && $filters['sort'] !== null) {
             $sortMethod = \explode('-', $filters['sort']);
-            $qb->orderBy($sortMethod[0], $sortMethod[1]);
+            switch ($sortMethod[0]) {
+                case 'title':
+                case 'createdAt':
+                    $qb->orderBy('a.'.$sortMethod[0], $sortMethod[1]);
+                    break;
+                default:
+                    throw new InvalidArgumentException();
+            }
         }
 
-        // dump($qb->getQuery()->getSQL());
-
         return $qb->getQuery();
-    }
-
-    // public function getSubpage(array $filters, $currentPage = 1, $perPage = 10): Paginator
-    public function getSubpage(array $filters, $currentPage, $perPage): Paginator
-    {
-        $currentPage = ($currentPage === null) ? 1: $currentPage;
-        $perPage = ($perPage === null) ? 1: $perPage;
-        $query = $this->buildQuery($filters);
-        $paginator = $this->paginate($query, $currentPage, $perPage);
-
-        return $paginator;
     }
 
     private function paginate($dql, $currentPage, $perPage): Paginator
