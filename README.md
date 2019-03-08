@@ -63,8 +63,8 @@ Proszę utworzyć po jednym użytkowniku dla każdej z ról z hasłem **demo1234
 
 ## Ad. Strona pojedynczego artykułu
 - Dodajemy zdjęcie do artykułu.
-- Pod artykułem powinny znaleźć się komentarze. Komentarze mogą być dodawane przez kogokolwiek. Pod komentarzami powinien znaleźć się formularz dodawania nowego komentarza z polami: "Imię", Email", 'Treść komentarza". Jeżeli komentarz dodaje zalogowany użytkownik to w dwa pierwsze pola wstawiamy wartości odpowiednich pól z encji User i blokujemy te pola, aby nie można było ich edytować. Oczywiście komentarz powinien być w relacji do artykułu.
-- Do pola formularza reprezentujego treść komentarza dodasz samodzielnie napisany walidator. Powinien on walidować czy komentarz nie zawiera wybranych słów (dowolnie jakich, sam wymyśl kilkanaście. Chodzi o logikę.)
+- `[x]` Pod artykułem powinny znaleźć się komentarze. Komentarze mogą być dodawane przez kogokolwiek. Pod komentarzami powinien znaleźć się formularz dodawania nowego komentarza z polami: "Imię", Email", 'Treść komentarza". Jeżeli komentarz dodaje zalogowany użytkownik to w dwa pierwsze pola wstawiamy wartości odpowiednich pól z encji User i blokujemy te pola, aby nie można było ich edytować. Oczywiście komentarz powinien być w relacji do artykułu.
+- `[x]` Do pola formularza reprezentujego treść komentarza dodasz samodzielnie napisany walidator. Powinien on walidować czy komentarz nie zawiera wybranych słów (dowolnie jakich, sam wymyśl kilkanaście. Chodzi o logikę.)
 - Możliwość pobrania artykuł na dysk w formie PDF. Czyli powinien znaleźć się przycisk "Pobierz artykuł". Do utworzenia PDF będzisz potrzebował zewnętrznej paczki.
 
 ## Ad. Tworzenie artykułu & Ad. Edycja artykułu
