@@ -21,13 +21,14 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Exception\NotSupported;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class ArticleController extends AbstractController
 {
     /**
      * @Route("/", name="article_list")
      */
-    public function index(Request $request, ArticleRepository $articleRepository): Response
+    public function index(Request $request, ArticleRepository $articleRepository, Session $session): Response
     {
         $options = [];
         $metadata = [];

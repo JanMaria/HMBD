@@ -1,0 +1,13 @@
+<div class="mt-5">
+    <h2>Komentarze użytkowników:</h2>
+    {% for comment in article.comments %}
+    <div class="card mt-3">
+        <div class="card-header">
+            {{ comment.name ~ ' | ' ~ comment.createdAt|date('d.m.Y (H:i:s)') }}
+        </div>
+        <div class="card-body">
+            {{ comment.content }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
