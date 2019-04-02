@@ -10,17 +10,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\HttpFoundation\Response;
 use App\Entity\Comment;
 use App\Entity\Article;
 use App\Validator\Constraints\IsCurseFree;
 use Doctrine\ORM\ORMException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security as AccessGuard;
 
 class CommentController extends AbstractController
 {
     /**
      * @Route("/comment/add", name="new_comment")
      */
-    public function addComment(Request $request, Security $security, ValidatorInterface $validator)
+    public function addComment(Request $request, Security $security, ValidatorInterface $validator): Response
     {
         $comment = new Comment();
 
@@ -64,6 +66,20 @@ class CommentController extends AbstractController
         }
 
         $this->addFlash('success', 'Dodano komentarz');
+
+        return $this->redirectToRoute('article_show', ['id' => $request->query->get('articleId')]);
+    }
+
+    /**
+     * @Route("/comment/delete", name="delete_comment")
+     * @AccessGuard("is_granted('ROLE_ADMIN')")
+     */
+    public function deleteComment(Request $request): Response
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $comment = $entityManager->find(Comment::class, $request->get('commentId'));
+        $entityManager->remove($comment);
+        $entityManager->flush();
 
         return $this->redirectToRoute('article_show', ['id' => $request->query->get('articleId')]);
     }

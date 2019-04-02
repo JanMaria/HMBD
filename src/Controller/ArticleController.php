@@ -172,4 +172,14 @@ class ArticleController extends AbstractController
 
         return $this->redirectToRoute('article_list');
     }
+
+    /**
+     * @Route("/download", name="download")
+     */
+    public function downloadPdf(\Knp\Snappy\Pdf $snappy)
+    {
+        $snappy->generate('http://localhost:8000/article/20', '/pdf.pdf');
+
+        return $this->redirectToRoute('article_show', ['id' => 20]);
+    }
 }

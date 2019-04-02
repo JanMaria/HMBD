@@ -83,11 +83,11 @@
                                     class="btn btn-outline-success btn-sm">Opublikuj</a>
                                 {% endif %}
                             </td>
-                            {% elseif is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-                                <td>
-                                    {{ article.isPublished ? 'Tak' : 'Nie' }}
-                                </td>
-                            {% endif %}
+                        {% elseif is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                            <td>
+                                {{ article.isPublished ? 'Tak' : 'Nie' }}
+                            </td>
+                        {% endif %}
                         <td>{{ article.body|truncate(100, true, '(...)')|wordwrap(30)|nl2br }}</td>
                         <td class="d-flex justify-content-center">
                             <a href={{ path('article_show', {'id': article.id}) }}

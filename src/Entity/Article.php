@@ -60,7 +60,7 @@ class Article
      * @Assert\File(
      *      maxSize = "1M",
      *      mimeTypes = "image/*",
-     *      maxSizeMessage = "Plik jest zbyt duży. Maksymalny dopuszczalny rozmiar to {{ limit }} {{ sufix }}.",
+     *      maxSizeMessage = "Plik jest zbyt duży. Maksymalny dopuszczalny rozmiar to {{ limit }} {{ suffix }}.",
      *      mimeTypesMessage = "Nieprawidłowy format pliku. Dopuszczalne wyłącznie pliki graficzne."
      * )
      */

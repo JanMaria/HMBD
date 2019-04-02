@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Doctrine\ORM\EntityManagerInterface;
 
 // TODO: tutaj chyba trzeba jeszcze wychwytywać wyjątki w przypadku niepowodzenia próby zapisania pliku
-// (i może usuwania pliku)
+// (i może usuwania pliku) -> dużo rzeczy może pójść nie tak na każdym kroku w tym procesie chyba
 class ImageTransformer implements DataTransformerInterface
 {
     private $requestStack;
@@ -45,9 +45,9 @@ class ImageTransformer implements DataTransformerInterface
         dump('reverseTransform - imageFile != null');
         if ($articleId !== null) {
             $imageAddress = $articleRepository->find($articleId)->getImage();
-            if ($imageAddress !== null) {
+            if ($imageAddress !== null && $imageAddress !== 'uploads/images/default_image.jpeg') {
                 $fileSystem = new Filesystem();
-                $fileSystem->remove($imageAdress);
+                $fileSystem->remove($imageAddress);
             }
         }
         $directory = 'uploads/images/';
