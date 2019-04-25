@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Security\Core\Security;
@@ -58,7 +60,7 @@ class Article
      * @Assert\File(
      *      maxSize = "1M",
      *      mimeTypes = "image/*",
-     *      maxSizeMessage = "Plik jest zbyt duży. Maksymalny dopuszczalny rozmiar to {{ limit }} {{ sufix }}.",
+     *      maxSizeMessage = "Plik jest zbyt duży. Maksymalny dopuszczalny rozmiar to {{ limit }} {{ suffix }}.",
      *      mimeTypesMessage = "Nieprawidłowy format pliku. Dopuszczalne wyłącznie pliki graficzne."
      * )
      */
@@ -69,10 +71,16 @@ class Article
      */
     private $tags;
 
-    // public function __construct(Security $security)
-    // {
-    //     $this->security = $security;
-    // }
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Comment", mappedBy="article", orphanRemoval=true)
+     * @ORM\OrderBy({"createdAt" = "DESC"})
+     */
+    private $comments;
+
+    public function __construct()
+    {
+        $this->comments = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -103,12 +111,6 @@ class Article
     {
         $this->createdAt = new \DateTime('now');
     }
-    // public function setCreatedAt(\DateTime $createdAt): self
-    // {
-    //     $this->createdAt = $createdAt;
-    //
-    //     return $this;
-    // }
 
     public function getIsPublished(): ?bool
     {
@@ -146,16 +148,6 @@ class Article
         return $this;
     }
 
-    // /**
-    //  * @ORM\PrePersist
-    //  */
-    // public function preSetUser()
-    // {
-    //     if (null === $this->user) {
-    //         $this->user = $this->security->getUser();
-    //     }
-    // }
-
     public function getImage()
     {
         return $this->image;
@@ -176,6 +168,37 @@ class Article
     public function setTags(array $tags): self
     {
         $this->tags = $tags;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Comment[]
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): self
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments[] = $comment;
+            $comment->setArticle($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): self
+    {
+        if ($this->comments->contains($comment)) {
+            $this->comments->removeElement($comment);
+            // set the owning side to null (unless already changed)
+            if ($comment->getArticle() === $this) {
+                $comment->setArticle(null);
+            }
+        }
 
         return $this;
     }

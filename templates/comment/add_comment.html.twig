@@ -1,0 +1,30 @@
+<div>
+    <div class="card text-black border-success">
+        <div class="card-header bg-transparent border-success">
+            <label for="comment">Dodaj komentarz:</label>
+        </div>
+        <form id="comment" name="comment" action="{{ path('new_comment') }}" novalidate>
+        <div class="card-body bg-transparent border-success">
+            <div class="form-group">
+                <label for="commentAutor">Autor:</label>
+                <input type="text" id="commentAuthor" name="commentAuthor" class="form-control border-success"
+                    {% if app.user is not null %} value="{{ app.user.name ~ " " ~ app.user.surname }}" disabled
+                    {% else %} value="{{ app.request.get('commentAuthor') }}" {% endif %} />
+                {% if errors.name is defined %}<li>{{ errors.name }}</li>{% endif %}
+                <label for="commentAuthorEmail">Email:</label>
+                <input type="email" id="commentAuthorEmail" name="commentAuthorEmail" class="form-control border-success"
+                    {% if app.user is not null %} value="{{ app.user.email }}" disabled
+                    {% else %} value="{{ app.request.get('commentAuthorEmail') }}" {% endif %} />
+                {% if errors.email is defined %}<li>{{ errors.email }}</li>{% endif %}
+            </div>
+            <label for="commentContent">Treść:</label>
+            <textarea rows="5" id="commentContent" name="commentContent" class="form-control border-success">{{
+                app.request.get('commentContent')
+            }}</textarea>
+            {% if errors.content is defined %}<li>{{ errors.content }}</li>{% endif %}
+            <input type="hidden" id="articleId" name="articleId" value="{{ article.id }}" />
+            <input type="submit" id="submitComment" name="submitComment" class="btn btn-dark mt-2" value="Dodaj">
+        </form>
+        </div>
+    </div>
+</div>

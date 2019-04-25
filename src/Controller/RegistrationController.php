@@ -42,16 +42,19 @@ class RegistrationController extends AbstractController
                 $handler->handleForm($form);
             } catch (ORMException $exception) {
                 $this->addFlash('dbFailure', 'Błąd obsługi bazy danych');
-                goto end;
+
+                return $this->render('user/register.html.twig', ['form' => $form->createView()]);
             }
 
             $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
             $this->container->get('security.token_storage')->setToken($token);
             $this->container->get('session')->set('_security_main', serialize($token));
 
+            $this->addFlash('success', 'Dodano użytkownika');
+
             return $this->redirectToRoute('article_list');
         }
-        end:
+
         return $this->render('user/register.html.twig', ['form' => $form->createView()]);
     }
 }

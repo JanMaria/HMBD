@@ -33,16 +33,6 @@ class ArticleRepository extends ServiceEntityRepository
 
         return $paginator;
     }
-    //
-    // public function getSubpage(array $filters, $currentPage, $perPage): Paginator
-    // {
-    //     $currentPage = ($currentPage === null) ? 1: $currentPage;
-    //     $perPage = ($perPage === null) ? 1: $perPage;
-    //     $query = $this->buildQuery($filters);
-    //     $paginator = $this->paginate($query, $currentPage, $perPage);
-    //
-    //     return $paginator;
-    // }
 
     private function buildSecurityPart(QueryBuilder $qb)
     {

@@ -44,12 +44,6 @@ class ArticleType extends AbstractType
     {
         $builder
             ->add('title', TextType::class)
-            // ->add('createdAt', DateType::class, [
-            //     'widget' => 'single_text',
-            //     'format' => 'dd-MM-yyyy',
-            //     'invalid_message' => 'Wprowadź datę we wskazanym formacie',
-            //     'disabled' => true,
-            // ])
             ->add('body', TextareaType::class, [
                 'required' => false,
                 'empty_data' => '[...nie dodano jeszcze treści artykułu...]',
@@ -80,23 +74,6 @@ class ArticleType extends AbstractType
                         $form->add('isPublished', CheckboxType::class);
                     }
                 }
-                //
-                // if ($article && $article->getId() !== null) {
-                //     if ($this->security->isGranted('ROLE_ADMIN')) {
-                //         $form->add('isPublished', ChoiceType::class, [
-                //             'choices' => [$options['isPublishedOptions']],
-                //         ]);
-                //     }
-                //     // else {
-                //     //     $form->add('isPublished', ChoiceType::class, [
-                //     //         'choices' => [$options['isPublishedOptions']],
-                //     //         'disabled' => true,
-                //     //         'mapped' => false,
-                //     //     ]);
-                //     // }
-                // } elseif ($this->security->isGranted('ROLE_ADMIN')) {
-                //     $form->add('isPublished', CheckboxType::class);
-                // }
 
                 if ($this->security->isGranted('ROLE_ADMIN')) {
                     $form->add('user', EntityType::class, [
@@ -112,19 +89,6 @@ class ArticleType extends AbstractType
                         'data' => $this->security->getUser(),
                     ]);
                 }
-                // else {
-                //     $form->add('user', EntityType::class, [
-                //         'class' => User::class,
-                //         'query_builder' => function (EntityRepository $er) {
-                //             return $er
-                //                 ->createQueryBuilder('user')
-                //                 ->where('user = :thisUser')
-                //                 ->setParameter('thisUser', $this->security->getUser());
-                //         },
-                //         'choice_label' => 'email',
-                //         'attr' => ['readonly' => true,],
-                //     ]);
-                // }
             });
 
             $builder
@@ -145,9 +109,9 @@ class ArticleType extends AbstractType
                     }
                 ));
 
-                $builder
-                    ->get('image')
-                    ->addModelTransformer($this->transformer);
+            $builder
+                ->get('image')
+                ->addModelTransformer($this->transformer);
     }
 
     public function configureOptions(OptionsResolver $resolver)

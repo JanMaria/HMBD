@@ -15,13 +15,13 @@ class IsExistingUserValidator extends ConstraintValidator
 
     public function __construct(UserRepository $userRepository)
     {
-      $this->userRepository = $userRepository;
+        $this->userRepository = $userRepository;
     }
 
     public function validate($value, Constraint $constraint)
     {
         if (!$constraint instanceof IsExistingUser) {
-           throw new UnexpectedTypeException($constraint, IsExistingUser::class);
+            throw new UnexpectedTypeException($constraint, IsExistingUser::class);
         }
 
         // custom constraints should ignore null and empty values to allow

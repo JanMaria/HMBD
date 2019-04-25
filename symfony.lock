@@ -1,4 +1,10 @@
 {
+    "captcha-com/captcha": {
+        "version": "4.2.3"
+    },
+    "captcha-com/symfony-captcha-bundle": {
+        "version": "4.2.10"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -65,11 +71,26 @@
     "doctrine/reflection": {
         "version": "v1.0.0"
     },
+    "dompdf/dompdf": {
+        "version": "v0.8.3"
+    },
     "egulias/email-validator": {
         "version": "2.1.7"
     },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
+    },
+    "knplabs/knp-snappy": {
+        "version": "v1.1.0"
+    },
+    "knplabs/knp-snappy-bundle": {
+        "version": "1.5",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "1.5",
+            "ref": "c81bdcf4a9d4e7b1959071457f9608631865d381"
+        }
     },
     "monolog/monolog": {
         "version": "1.24.0"
@@ -83,6 +104,12 @@
     "ocramius/proxy-manager": {
         "version": "2.2.2"
     },
+    "phenx/php-font-lib": {
+        "version": "0.5.1"
+    },
+    "phenx/php-svg-lib": {
+        "version": "v0.3.2"
+    },
     "psr/cache": {
         "version": "1.0.1"
     },
@@ -94,6 +121,9 @@
     },
     "psr/simple-cache": {
         "version": "1.0.1"
+    },
+    "sabberworm/php-css-parser": {
+        "version": "8.1.0"
     },
     "sensio/framework-extra-bundle": {
         "version": "5.2",

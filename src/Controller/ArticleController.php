@@ -21,13 +21,16 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Exception\NotSupported;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class ArticleController extends AbstractController
 {
     /**
      * @Route("/", name="article_list")
      */
-    public function index(Request $request, ArticleRepository $articleRepository): Response
+    public function index(Request $request, ArticleRepository $articleRepository, Session $session): Response
     {
         $options = [];
         $metadata = [];
@@ -57,7 +60,8 @@ class ArticleController extends AbstractController
         ];
         $options['perPageOptions'] = [5, 10, 15, 20, 25, 30];
 
-        dump($metadata);
+        // dump($metadata);
+        // dump($options);
 
         $articles = $articleRepository->getSubpage($metadata);
 
@@ -96,7 +100,6 @@ class ArticleController extends AbstractController
         return $this->render('articles/edit.html.twig', ['form' => $form->createView()]);
     }
 
-    // * @Security("is_granted('ROLE_ADMIN') or (token !== null and user.hasArticle(id))")
     /**
      * @Route("/article/edit/{id}", name="edit_article")
      * @Security("is_granted('ROLE_ADMIN') or (is_granted('IS_AUTHENTICATED_FULLY') and user.hasArticle(id))")
@@ -131,7 +134,9 @@ class ArticleController extends AbstractController
      */
     public function show(Article $article): Response
     {
-        return $this->render('articles/show.html.twig', ['article' => $article]);
+        return $this->render('articles/show.html.twig', [
+            'article' => $article,
+        ]);
     }
 
     /**
@@ -172,4 +177,40 @@ class ArticleController extends AbstractController
 
         return $this->redirectToRoute('article_list');
     }
+
+    /**
+     * @Route("/download", name="download")
+     */
+    public function downloadPdf(Request $request, \Knp\Snappy\Pdf $snappy)
+    {
+        $filename = 'temp/'.md5(uniqid()).'.pdf';
+        $article = $this->getDoctrine()->getManager()->find(Article::class, $request->get('id'));
+
+        $snappy->generateFromHtml(
+            $this->renderView(
+                'articles/show.html.twig',
+                ['article' => $article],
+            ),
+            $filename
+        );
+
+        $response = new BinaryFileResponse(new File($filename));
+        $response->deleteFileAfterSend(true);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'article.pdf');
+
+        return $response;
+    }
+
+    // /**
+    //  * @Route("/download", name="download")
+    //  */
+    // public function downloadPdf(Request $request, ArticleRepository $repository)
+    // {
+    //     $dompdf = new Dompdf();
+    //     $content = $this->render('articles/show.html.twig', ['article' => $repository->find(9)]);
+    //     $dompdf->loadHtml($content);
+    //     $dompdf->render();
+    //     $dompdf->stream();
+    // }
 }

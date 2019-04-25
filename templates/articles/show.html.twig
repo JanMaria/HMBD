@@ -3,9 +3,31 @@
 {% block title %}{{ article.title }}{% endblock %}
 
 {% block body %}
-  {{ parent() }}
-  <h1>{{ article.title }}</h1>
-  <p>{{ article.body }}</p>
-  <hr>
-  <a href="/">Go Back</a>
+    {{ parent() }}
+    <div class="row">
+        <h1 class="col">
+            {{ article.title }}
+        </h1>
+        <div class="col text-right">
+            <img class="img-fluid" src="{{ asset(article.image) }}" />
+            <!-- <img class="img-fluid" src="{{ app.request.scheme ~ '://' ~ app.request.httpHost ~ asset(article.image) }}" /> -->
+        </div>
+    </div>
+    <hr>
+    <hr>
+    <div class="text-justify">
+        {{ article.body }}
+    </div>
+
+    <hr>
+    <hr>
+
+    {% include 'comment/add_comment.html.twig' %}
+    {% include 'comment/show_comments.html.twig' %}
+    <div class="d-flex">
+        <a class="btn btn-outline-primary my-4" href="{{ path('download', {'id': article.id}) }}">Pobierz jako Pdf</a>
+        <a class="my-4 ml-auto" href="/">Wróć</a>
+    </div>
+
+
 {% endblock %}

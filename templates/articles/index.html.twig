@@ -43,16 +43,8 @@
             <select form="filters" id="sort" name="sort" class="form-control m-2" onchange="this.form.submit();">
                 <option value="" selected disabled hidden><p class="text-muted">Sortuj wyniki...<p></option>
                 {% for method, name in options['sortOptions'] %}
-                    {% if method == metadata['sort'] %}
-                        <option value="{{ method }}" selected>{{ name }}</option>
-                    {% else %}
-                        <option value="{{ method }}">{{ name }}</option>
-                    {% endif %}
+                        <option value="{{ method }}" {% if method == metadata['sort'] %}selected{% endif %}>{{ name }}</option>
                 {% endfor %}
-                <!-- <option value="a.title-ASC">Nazwa - rosnąco</option>
-                <option value="a.title-DESC">Nazwa - malejąco</option>
-                <option value="a.createdAt-ASC">Data utworzenia - rosnąco</option>
-                <option value="a.createdAt-DESC">Data utworzenia - malejąco</option> -->
             </select>
         </div>
     </div>
@@ -91,11 +83,11 @@
                                     class="btn btn-outline-success btn-sm">Opublikuj</a>
                                 {% endif %}
                             </td>
-                            {% elseif is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-                                <td>
-                                    {{ article.isPublished ? 'Tak' : 'Nie' }}
-                                </td>
-                            {% endif %}
+                        {% elseif is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                            <td>
+                                {{ article.isPublished ? 'Tak' : 'Nie' }}
+                            </td>
+                        {% endif %}
                         <td>{{ article.body|truncate(100, true, '(...)')|wordwrap(30)|nl2br }}</td>
                         <td class="d-flex justify-content-center">
                             <a href={{ path('article_show', {'id': article.id}) }}
@@ -175,16 +167,12 @@
 
 {% block javascripts %}
     <script>
-        // $('#articleDeleteModal').on('show.bs.modal', function(event){
-        //     var button = $(event.relatedTarget);
-        //     var article_id = button.data('articleid');
-        //     var mdl = $(this);
-        //
-        //     mdl.find('.modal-body #artcl_id').val(article_id);
-        // });
+        $('#articleDeleteModal').on('show.bs.modal', function(event){
+            var button = $(event.relatedTarget);
+            var article_id = button.data('articleid');
+            var mdl = $(this);
 
-        // $.each({{ metadata|json_encode|raw }}, function(index, value) {
-        //     document.getElementById(index).value = value;
-        // });
+            mdl.find('.modal-body #artcl_id').val(article_id);
+        });
     </script>
 {% endblock %}
