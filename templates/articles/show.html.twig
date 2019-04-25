@@ -9,7 +9,8 @@
             {{ article.title }}
         </h1>
         <div class="col text-right">
-            <img class="img-fluid" src="{{ asset(article.image) }}">
+            <img class="img-fluid" src="{{ asset(article.image) }}" />
+            <!-- <img class="img-fluid" src="{{ app.request.scheme ~ '://' ~ app.request.httpHost ~ asset(article.image) }}" /> -->
         </div>
     </div>
     <hr>
@@ -18,15 +19,14 @@
         {{ article.body }}
     </div>
 
-    <a href="{{ path('download') }}">download</a>
-
     <hr>
     <hr>
 
     {% include 'comment/add_comment.html.twig' %}
     {% include 'comment/show_comments.html.twig' %}
     <div class="d-flex">
-        <a class="my-4 ml-auto" href="/">Go Back</a>
+        <a class="btn btn-outline-primary my-4" href="{{ path('download', {'id': article.id}) }}">Pobierz jako Pdf</a>
+        <a class="my-4 ml-auto" href="/">Wróć</a>
     </div>
 
 

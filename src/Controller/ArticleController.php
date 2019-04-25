@@ -22,6 +22,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Exception\NotSupported;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class ArticleController extends AbstractController
 {
@@ -58,7 +60,8 @@ class ArticleController extends AbstractController
         ];
         $options['perPageOptions'] = [5, 10, 15, 20, 25, 30];
 
-        dump($metadata);
+        // dump($metadata);
+        // dump($options);
 
         $articles = $articleRepository->getSubpage($metadata);
 
@@ -131,7 +134,9 @@ class ArticleController extends AbstractController
      */
     public function show(Article $article): Response
     {
-        return $this->render('articles/show.html.twig', ['article' => $article]);
+        return $this->render('articles/show.html.twig', [
+            'article' => $article,
+        ]);
     }
 
     /**
@@ -176,10 +181,36 @@ class ArticleController extends AbstractController
     /**
      * @Route("/download", name="download")
      */
-    public function downloadPdf(\Knp\Snappy\Pdf $snappy)
+    public function downloadPdf(Request $request, \Knp\Snappy\Pdf $snappy)
     {
-        $snappy->generate('http://localhost:8000/article/20', '/pdf.pdf');
+        $filename = 'temp/'.md5(uniqid()).'.pdf';
+        $article = $this->getDoctrine()->getManager()->find(Article::class, $request->get('id'));
 
-        return $this->redirectToRoute('article_show', ['id' => 20]);
+        $snappy->generateFromHtml(
+            $this->renderView(
+                'articles/show.html.twig',
+                ['article' => $article],
+            ),
+            $filename
+        );
+
+        $response = new BinaryFileResponse(new File($filename));
+        $response->deleteFileAfterSend(true);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, 'article.pdf');
+
+        return $response;
     }
+
+    // /**
+    //  * @Route("/download", name="download")
+    //  */
+    // public function downloadPdf(Request $request, ArticleRepository $repository)
+    // {
+    //     $dompdf = new Dompdf();
+    //     $content = $this->render('articles/show.html.twig', ['article' => $repository->find(9)]);
+    //     $dompdf->loadHtml($content);
+    //     $dompdf->render();
+    //     $dompdf->stream();
+    // }
 }

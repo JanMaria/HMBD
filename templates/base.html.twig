@@ -12,26 +12,26 @@
         {{ include('inc/navbar.html.twig') }}
         <div class="container">
         {% block body %}
-        {% for message in app.flashes('dbFailure') %}
-              <div class="alert alert-danger">
+            {% for message in app.flashes('dbFailure') %}
+                  <div class="alert alert-danger">
+                        {{ message }}
+                  </div>
+            {% endfor %}
+            {% for message in app.flashes('success') %}
+                <div class="alert alert-success">
                     {{ message }}
-              </div>
-        {% endfor %}
-        {% for message in app.flashes('success') %}
-          <div class="alert alert-success">
-            {{ message }}
-          </div>
-        {% endfor %}
-        {% for message in app.flashes('loginFailure') %}
-          <div class="alert alert-danger">
-            {{ message }}
-          </div>
-        {% endfor %}
-        {% for message in app.flashes('fileFailure') %}
-          <div class="alert alert-danger">
-            {{ message }}
-          </div>
-        {% endfor %}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('loginFailure') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            {% for message in app.flashes('fileFailure') %}
+                <div class="alert alert-danger">
+                    {{ message }}
+                </div>
+            {% endfor %}
 
 
         {% endblock %}
